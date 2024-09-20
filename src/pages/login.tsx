@@ -1,5 +1,17 @@
 import React from "react"
 import { useForm } from "react-hook-form"
+import { FormError } from "../components/form-error"
+import { gql, useMutation } from "@apollo/client"
+
+const LOGIN_MUTATION = gql`
+    mutation login($email: String!, $password: String!){
+        login(input: {email: $email, password: $password}){
+            ok
+            error
+            token
+        }
+    }
+`
 
 interface ILoginForm {
     email?: string
@@ -8,6 +20,7 @@ interface ILoginForm {
 
 export const Login = () => {
     const {register, getValues, formState: {errors}, handleSubmit } = useForm<ILoginForm>()
+    const [loginMutation, {loading, error, data}] = useMutation(LOGIN_MUTATION)
     const onSubmit = () => {
         console.log(getValues())
     }
@@ -21,15 +34,15 @@ export const Login = () => {
                         required
                         className="input"
                         placeholder="Email" />
-                    {errors.email?.message && <span className="font-medium text-red-500">{errors.email.message}</span>}
+                    {errors.email?.message && <FormError errorMessage={errors.email.message} />}
                     <input
                         {...register("password", {required: "Password is required", minLength: 5})}
                         type="password"
                         required
                         className="input"
                         placeholder="Password" />
-                    {errors.password?.message && <span className="font-medium text-red-500">{errors.password.message}</span>}
-                    {errors.password?.type === "minLength" && <span className="font-medium text-red-500">Password must be at least 5 characters</span>}
+                    {errors.password?.message && <FormError errorMessage={errors.password.message} />}
+                    {errors.password?.type === "minLength" && <FormError errorMessage="Password must be at least 5 characters" />}
                     <button className="mt-3 button">
                         Log in
                     </button>
