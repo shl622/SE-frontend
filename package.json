@@ -12,7 +12,6 @@
     "@types/react": "^18.3.5",
     "@types/react-dom": "^18.3.0",
     "@types/react-router-dom": "^5.3.3",
-    "apollo": "^2.34.0",
     "autoprefixer": "^10.4.20",
     "graphql": "^15.8.0",
     "postcss": "^8.4.45",
@@ -26,10 +25,11 @@
   },
   "scripts": {
     "twbuild": "npx tailwindcss-cli@latest build -i src/styles/tailwind.css -o src/styles/styles.css",
-    "start": "npm run twbuild & react-scripts start",
+    "start": "rm -rf src/__generated__ && npm run generate && npm run twbuild & react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "eject": "react-scripts eject",
+    "generate": "graphql-codegen"
   },
   "eslintConfig": {
     "extends": [
@@ -50,23 +50,10 @@
     ]
   },
   "devDependencies": {
+    "@graphql-codegen/cli": "^5.0.2",
+    "@graphql-codegen/typescript": "^4.0.9",
+    "@graphql-codegen/typescript-operations": "^4.2.3",
+    "@parcel/watcher": "^2.4.1",
     "tailwindcss": "^3.4.10"
-  },
-  "overrides": {
-    "@apollo/client": {
-      "react": "$react"
-    },
-    "@apollographql/graphql-language-service-interface": {
-      "graphql": "$graphql"
-    },
-    "@apollographql/graphql-language-service-parser": {
-      "graphql": "$graphql"
-    },
-    "@apollographql/graphql-language-service-types": {
-      "graphql": "$graphql"
-    },
-    "@apollographql/graphql-language-service-utils": {
-      "graphql": "$graphql"
-    }
   }
 }
