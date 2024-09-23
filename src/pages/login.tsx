@@ -2,11 +2,11 @@ import React from "react"
 import { useForm } from "react-hook-form"
 import { FormError } from "../components/form-error"
 import { gql, useMutation } from "@apollo/client"
-import {login, loginVariables} from "../__generated__/login"
+import {LoginMutation, LoginMutationVariables} from "../__generated__/graphql"
 
 const LOGIN_MUTATION = gql`
-    mutation login($email: String!, $password: String!){
-        login(input: {email: $email, password: $password}){
+    mutation login($loginInput:LoginInput!){
+        login(input: $loginInput){
             ok
             error
             token
@@ -20,11 +20,18 @@ interface ILoginForm {
 }
 
 export const Login = () => {
-    const {register, getValues, formState: {errors}, handleSubmit } = useForm<ILoginForm>()
-    const [loginMutation, {data}] = useMutation<login, loginVariables>(LOGIN_MUTATION)
+    const {register, getValues, formState: {errors}, handleSubmit, watch } = useForm<ILoginForm>()
+    const [loginMutation, {data: loginResult}] = useMutation<LoginMutation, LoginMutationVariables>(LOGIN_MUTATION, {
+        onCompleted: (data: LoginMutation) => {
+            const {login: {ok, error, token}} = data
+            if(ok){
+                console.log(token)
+            }
+        }
+    })
     const onSubmit = () => {
         const {email, password} = getValues()
-        loginMutation({variables: {email, password}})
+        loginMutation({variables: {loginInput: {email, password}}})
     }
     return (
         <div className="h-screen flex items-center justify-center bg-gray-800 font-sans">
@@ -48,6 +55,7 @@ export const Login = () => {
                     <button className="mt-3 button">
                         Log in
                     </button>
+                    {loginResult?.login.error && <FormError errorMessage={loginResult.login.error} />}
                 </form>
             </div>
         </div>
