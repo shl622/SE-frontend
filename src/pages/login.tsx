@@ -2,7 +2,7 @@ import React from "react"
 import { useForm } from "react-hook-form"
 import { FormError } from "../components/form-error"
 import { gql, useMutation } from "@apollo/client"
-import {login, loginVariables} from "../../__generated__/login"
+import {login, loginVariables} from "../__generated__/login"
 
 const LOGIN_MUTATION = gql`
     mutation login($email: String!, $password: String!){
