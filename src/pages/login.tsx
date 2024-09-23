@@ -14,15 +14,16 @@ const LOGIN_MUTATION = gql`
 `
 
 interface ILoginForm {
-    email?: string
-    password?: string
+    email: string
+    password: string
 }
 
 export const Login = () => {
     const {register, getValues, formState: {errors}, handleSubmit } = useForm<ILoginForm>()
     const [loginMutation, {loading, error, data}] = useMutation(LOGIN_MUTATION)
     const onSubmit = () => {
-        console.log(getValues())
+        const {email, password} = getValues()
+        loginMutation({variables: {email, password}})
     }
     return (
         <div className="h-screen flex items-center justify-center bg-gray-800 font-sans">
