@@ -1,10 +1,11 @@
 import React from "react";
-import { gql, useQuery } from "@apollo/client";
-import { CurrAuthQuery, CurrAuthQueryVariables, UserRole } from "../__generated__/graphql";
 import { BrowserRouter as Router, Route, Switch, Redirect } from "react-router-dom";
 import { Restaurants } from "../pages/client/restaurants";
 import { isLoggedInVar } from "../apollo";
 import { LOCALSTORAGE_TOKEN } from "../constants";
+import { Header } from "../components/header";
+import { useCurrAuth } from "../hooks/useCurrAuth";
+import { UserRole } from "../__generated__/graphql";
 
 const ClientRoutes = [
     <Route path="/" exact>
@@ -12,22 +13,8 @@ const ClientRoutes = [
     </Route>
 ]
 
-
-const CURRAUTH_QUERY = gql`
-    query currAuth{
-        currAuth{
-            id
-            email
-            role
-            verified
-        }
-    }
-`;
-
 export const LoggedInRouter = () => {
-    const { data, loading, error } = useQuery<CurrAuthQuery, CurrAuthQueryVariables>(CURRAUTH_QUERY,{
-        fetchPolicy: "network-only"
-    })
+    const { data, loading, error } = useCurrAuth()
     if (!data || loading || error) {
         return <div>Loading...</div>
     }
@@ -43,6 +30,7 @@ export const LoggedInRouter = () => {
     }
     return (
         <Router>
+            <Header/>
             <Switch>
                 {data.currAuth?.role === UserRole.Client && ClientRoutes}
                 <Redirect to="/" />
