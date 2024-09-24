@@ -7,7 +7,8 @@ import eatsLogo from "../assets/horizontal-logo.png"
 import { Button } from "../components/button"
 import { Link } from "react-router-dom"
 import { Helmet, HelmetProvider } from "react-helmet-async"
-import { isLoggedInVar } from "../apollo"
+import { authToken, isLoggedInVar } from "../apollo"
+import { LOCALSTORAGE_TOKEN } from "../constants"
 
 const LOGIN_MUTATION = gql`
     mutation login($loginInput:LoginInput!){
@@ -18,7 +19,6 @@ const LOGIN_MUTATION = gql`
         }
     }
 `
-
 interface ILoginForm {
     email: string
     password: string
@@ -28,9 +28,10 @@ export const Login = () => {
     const { register, getValues, formState: { errors }, handleSubmit, formState } = useForm<ILoginForm>()
     const [loginMutation, { data: loginResult, loading }] = useMutation<LoginMutation, LoginMutationVariables>(LOGIN_MUTATION, {
         onCompleted: (data: LoginMutation) => {
-            const { login: { ok, error, token } } = data
-            if (ok) {
-                console.log(token)
+            const { login: { ok, token } } = data
+            if (ok && token) {
+                localStorage.setItem(LOCALSTORAGE_TOKEN, token)
+                authToken(token)
                 isLoggedInVar(true)
             }
         },
@@ -85,8 +86,4 @@ export const Login = () => {
             </div>
         </div>
     )
-}
-
-function setNetworkError(arg0: null) {
-    throw new Error("Function not implemented.")
 }

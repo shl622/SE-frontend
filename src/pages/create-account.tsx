@@ -34,7 +34,6 @@ export const CreateAccount = () => {
         onCompleted: (data: CreateAccountMutation) => {
             const { createAccount: { ok } } = data
             if (ok) {
-                //redirect to login
                 history.push("/")
                 console.log('Account created successfully')
             }
@@ -96,8 +95,4 @@ export const CreateAccount = () => {
             </div>
         </div>
     )
-}
-
-function setNetworkError(arg0: null) {
-    throw new Error("Function not implemented.")
 }
