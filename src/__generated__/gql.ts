@@ -15,6 +15,7 @@ import { TypedDocumentNode as DocumentNode } from '@graphql-typed-document-node/
 const documents = {
     "\n    mutation createAccount($createAccountInput:CreateAccountInput!){\n        createAccount(input: $createAccountInput){\n            ok\n            error\n        }\n    }\n": types.CreateAccountDocument,
     "\n    mutation login($loginInput:LoginInput!){\n        login(input: $loginInput){\n            ok\n            error\n            token\n        }\n    }\n": types.LoginDocument,
+    "\n    query currAuth{\n        currAuth{\n            id\n            email\n            role\n            verified\n        }\n    }\n": types.CurrAuthDocument,
 };
 
 /**
@@ -39,6 +40,10 @@ export function graphql(source: "\n    mutation createAccount($createAccountInpu
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
 export function graphql(source: "\n    mutation login($loginInput:LoginInput!){\n        login(input: $loginInput){\n            ok\n            error\n            token\n        }\n    }\n"): (typeof documents)["\n    mutation login($loginInput:LoginInput!){\n        login(input: $loginInput){\n            ok\n            error\n            token\n        }\n    }\n"];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(source: "\n    query currAuth{\n        currAuth{\n            id\n            email\n            role\n            verified\n        }\n    }\n"): (typeof documents)["\n    query currAuth{\n        currAuth{\n            id\n            email\n            role\n            verified\n        }\n    }\n"];
 
 export function graphql(source: string) {
   return (documents as any)[source] ?? {};
