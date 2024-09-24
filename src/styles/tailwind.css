@@ -5,7 +5,3 @@
 .input{
     @apply px-5 py-2 border-2 text-lg font-light border-gray-300 focus:outline-none focus:border-gray-500 
 }
-
-.button{
-    @apply text-white text-lg font-medium bg-green-600 py-2.5 shadow-inner hover:bg-green-700 transition-colors
-}
