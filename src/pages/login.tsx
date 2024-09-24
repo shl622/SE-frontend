@@ -18,7 +18,6 @@ const LOGIN_MUTATION = gql`
         }
     }
 `
-
 interface ILoginForm {
     email: string
     password: string
@@ -28,7 +27,7 @@ export const Login = () => {
     const { register, getValues, formState: { errors }, handleSubmit, formState } = useForm<ILoginForm>()
     const [loginMutation, { data: loginResult, loading }] = useMutation<LoginMutation, LoginMutationVariables>(LOGIN_MUTATION, {
         onCompleted: (data: LoginMutation) => {
-            const { login: { ok, error, token } } = data
+            const { login: { ok, token } } = data
             if (ok) {
                 console.log(token)
                 isLoggedInVar(true)
@@ -85,8 +84,4 @@ export const Login = () => {
             </div>
         </div>
     )
-}
-
-function setNetworkError(arg0: null) {
-    throw new Error("Function not implemented.")
 }
