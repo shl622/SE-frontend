@@ -7,7 +7,8 @@ import eatsLogo from "../assets/horizontal-logo.png"
 import { Button } from "../components/button"
 import { Link } from "react-router-dom"
 import { Helmet, HelmetProvider } from "react-helmet-async"
-import { isLoggedInVar } from "../apollo"
+import { authToken, isLoggedInVar } from "../apollo"
+import { LOCALSTORAGE_TOKEN } from "../constants"
 
 const LOGIN_MUTATION = gql`
     mutation login($loginInput:LoginInput!){
@@ -28,8 +29,9 @@ export const Login = () => {
     const [loginMutation, { data: loginResult, loading }] = useMutation<LoginMutation, LoginMutationVariables>(LOGIN_MUTATION, {
         onCompleted: (data: LoginMutation) => {
             const { login: { ok, token } } = data
-            if (ok) {
-                console.log(token)
+            if (ok && token) {
+                localStorage.setItem(LOCALSTORAGE_TOKEN, token)
+                authToken(token)
                 isLoggedInVar(true)
             }
         },
