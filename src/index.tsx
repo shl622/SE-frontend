@@ -12,7 +12,7 @@ const root = ReactDOM.createRoot(
 root.render(
   <React.StrictMode>
     <ApolloProvider client={client}>
-      <div className='min-h-screen'>
+      <div className='min-h-screen font-urbanist'>
         <App />
       </div>
     </ApolloProvider>
