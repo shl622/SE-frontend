@@ -1,11 +1,8 @@
+@import url('https://fonts.googleapis.com/css2?family=Urbanist:ital,wght@0,100..900;1,100..900&display=swap');
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 .input{
-    @apply bg-gray-100 py-3 px-5 rounded-lg shadow-inner focus:outline-none border-2 focus:ring-2 focus:ring-green-800 focus:border-opacity-50 text-gray-800
-}
-
-.button{
-    @apply bg-green-800 text-white py-2.5 rounded-lg shadow-inner focus:outline-none mt-3 text-lg hover:opacity-90
+    @apply px-5 py-2 border-2 text-lg font-light border-gray-300 focus:outline-none focus:border-gray-500 
 }
