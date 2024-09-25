@@ -7,6 +7,7 @@ import eatsLogo from "../assets/horizontal-logo.png"
 import { Button } from "../components/button"
 import { Link, useHistory } from "react-router-dom"
 import { Helmet, HelmetProvider } from "react-helmet-async"
+import { EMAIL_REGEX } from "../constants"
 
 const CREATE_ACCOUNT_MUTATION = gql`
     mutation createAccount($createAccountInput:CreateAccountInput!){
@@ -68,7 +69,7 @@ export const CreateAccount = () => {
                     <input
                         {...register("email", {
                             required: "Please enter an email", pattern: {
-                                value: /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/,
+                                value: EMAIL_REGEX,
                                 message: "Please enter a valid email"
                             }
                         })}
