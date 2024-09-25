@@ -5,7 +5,8 @@ module.exports = {
   theme: {
     extend: {
       colors:{
-        lime: colors.lime
+        lime: colors.lime,
+        teal: colors.teal
       },
       fontFamily: {
         urbanist: ['Urbanist', 'sans-serif'],
