@@ -8,6 +8,7 @@ import { useCurrAuth } from "../hooks/useCurrAuth";
 import { UserRole } from "../__generated__/graphql";
 import { NotFound } from "../pages/notfound";
 import { ConfirmEmail } from "../pages/user/confirm-email";
+import { EditProfile } from "../pages/user/edit-profile";
 
 const ClientRoutes = [
     <Route key={1} path="/" exact>
@@ -15,6 +16,9 @@ const ClientRoutes = [
     </Route>,
     <Route key={2} path="/confirm">
         <ConfirmEmail />
+    </Route>,
+    <Route key={3} path="/edit-profile">
+        <EditProfile />
     </Route>
 ]
 
