@@ -6,10 +6,15 @@ import { LOCALSTORAGE_TOKEN } from "../constants";
 import { Header } from "../components/header";
 import { useCurrAuth } from "../hooks/useCurrAuth";
 import { UserRole } from "../__generated__/graphql";
+import { NotFound } from "../pages/notfound";
+import { ConfirmEmail } from "../pages/user/confirm-email";
 
 const ClientRoutes = [
-    <Route path="/" exact>
+    <Route key={1} path="/" exact>
         <Restaurants />
+    </Route>,
+    <Route key={2} path="/confirm">
+        <ConfirmEmail />
     </Route>
 ]
 
@@ -18,11 +23,12 @@ export const LoggedInRouter = () => {
     if (!data || loading || error) {
         return <div>Loading...</div>
     }
-    if(data.currAuth?.role === UserRole.Owner){
-        return(
+    if (data.currAuth?.role === UserRole.Owner) {
+        return (
             <div>
                 <h1>Owner</h1>
-                <button onClick={()=>{isLoggedInVar(false)
+                <button onClick={() => {
+                    isLoggedInVar(false)
                     localStorage.removeItem(LOCALSTORAGE_TOKEN)
                 }}>Log out</button>
             </div>
@@ -30,10 +36,12 @@ export const LoggedInRouter = () => {
     }
     return (
         <Router>
-            <Header/>
+            <Header />
             <Switch>
                 {data.currAuth?.role === UserRole.Client && ClientRoutes}
-                <Redirect to="/" />
+                <Route>
+                    <NotFound />
+                </Route>
             </Switch>
         </Router>
     )
