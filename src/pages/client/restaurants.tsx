@@ -4,6 +4,8 @@ import { Helmet, HelmetProvider } from "react-helmet-async";
 import { RestaurantsPageQueryQuery, RestaurantsPageQueryQueryVariables } from "../../__generated__/graphql";
 import { Restaurant } from "../../components/restaurant";
 import { Category } from "../../components/category";
+import { useForm } from "react-hook-form";
+import { useHistory } from "react-router-dom";
 
 const RESTAURANTS_QUERY = gql`
     query restaurantsPageQuery($input: RestaurantsInput!) {
@@ -37,6 +39,10 @@ const RESTAURANTS_QUERY = gql`
     }
 `
 
+interface IFormProps {
+    searchQuery: string
+}
+
 export const Restaurants = () => {
     const [page, setPage] = useState(1)
     const { data, loading } = useQuery<RestaurantsPageQueryQuery, RestaurantsPageQueryQueryVariables>(RESTAURANTS_QUERY, {
@@ -48,6 +54,15 @@ export const Restaurants = () => {
     })
     const onNextPageClick = () => setPage((current) => current + 1)
     const onPrevPageClick = () => setPage((current) => current - 1)
+    const { register, handleSubmit,getValues } = useForm<IFormProps>()
+    const onSearchSubmit = () => {
+        const {searchQuery} = getValues()
+        history.push({
+            pathname:"/search",
+            search: `?term=${searchQuery}`
+        })
+    }
+    const history = useHistory()
     return (
         <div>
             <HelmetProvider>
@@ -55,8 +70,10 @@ export const Restaurants = () => {
                     <title>Restaurants | Super Eats</title>
                 </Helmet>
             </HelmetProvider>
-            <form className="bg-teal-950 w-full py-20 md:py-40 flex items-center justify-center px-4 md:px-0">
-                <input className="input w-3/4 rounded-md border-0 px-5 py-2.5 placeholder-gray-500 md:w-1/2" type="search" placeholder="What are you craving today?" />
+            <form onSubmit={handleSubmit(onSearchSubmit)} className="bg-teal-950 w-full py-20 md:py-40 flex items-center justify-center px-4 md:px-0">
+                <input
+                    {...register("searchQuery", { required: true, minLength: 3 })}
+                    className="input w-3/4 rounded-md border-0 px-5 py-2.5 placeholder-gray-500 md:w-1/2" name="searchQuery" type="search" placeholder="What are you craving today?" />
             </form>
             {!loading &&
                 <div className="max-w-screen-2xl mx-auto mt-5 pb-20">
@@ -72,7 +89,7 @@ export const Restaurants = () => {
                     </div>
                     <div className="flex justify-center items-center mt-10">
                         <span className="mx-1">
-                        {page} of {data?.restaurants.totalPages}
+                            {page} of {data?.restaurants.totalPages}
                         </span>
                         {page !== data?.restaurants.totalPages &&
                             <button className="font-medium text-lg focus:outline-none" onClick={onNextPageClick}>&rarr;</button>
