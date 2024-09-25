@@ -1,7 +1,8 @@
-import { gql, useMutation } from "@apollo/client";
+import { gql, useApolloClient, useMutation } from "@apollo/client";
 import React, { useEffect } from "react";
 import { VerifyEmailMutation, VerifyEmailMutationVariables } from "../../__generated__/graphql";
-import { useLocation } from "react-router-dom";
+import { useHistory, useLocation } from "react-router-dom";
+import { useCurrAuth } from "../../hooks/useCurrAuth";
 
 const VERIFY_EMAIL_MUTATION = gql`
     mutation verifyEmail($input: VerifyEmailInput!) {
@@ -13,7 +14,27 @@ const VERIFY_EMAIL_MUTATION = gql`
 `
 
 export const ConfirmEmail = () => {
-    const [verifyEmail, {loading:verifyingEmail}] = useMutation<VerifyEmailMutation, VerifyEmailMutationVariables>(VERIFY_EMAIL_MUTATION)
+    const client = useApolloClient()
+    const {data: userData} = useCurrAuth()
+    const history = useHistory()
+    const [verifyEmail, {loading:verifyingEmail}] = useMutation<VerifyEmailMutation, VerifyEmailMutationVariables>(VERIFY_EMAIL_MUTATION,{
+        onCompleted: (data:VerifyEmailMutation) => {
+            const { verifyEmail: { ok } } = data
+            if (ok && userData?.currAuth?.id) {
+                client.writeFragment({
+                    id: `User:${userData?.currAuth?.id}`,
+                    fragment: gql`
+                        fragment VerifiedUser on User {
+                            verified
+                        }
+                    `,
+                    data: { verified: true }
+                })
+                console.log('Email verified successfully')
+                history.push("/")
+            }
+        }
+    })
     useEffect(()=>{
        const [_, code] = window.location.href.split("code=")
        verifyEmail({
