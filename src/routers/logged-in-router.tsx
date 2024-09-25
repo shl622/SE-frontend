@@ -1,16 +1,15 @@
-import React from "react";
-import { BrowserRouter as Router, Route, Switch, Redirect } from "react-router-dom";
-import { Restaurants } from "../pages/client/restaurants";
-import { isLoggedInVar } from "../apollo";
-import { LOCALSTORAGE_TOKEN } from "../constants";
-import { Header } from "../components/header";
-import { useCurrAuth } from "../hooks/useCurrAuth";
+import { Route, BrowserRouter as Router, Switch } from "react-router-dom";
 import { UserRole } from "../__generated__/graphql";
+import { isLoggedInVar } from "../apollo";
+import { Header } from "../components/header";
+import { LOCALSTORAGE_TOKEN } from "../constants";
+import { useCurrAuth } from "../hooks/useCurrAuth";
+import { Category } from "../pages/client/category";
+import { Restaurants } from "../pages/client/restaurants";
+import { Search } from "../pages/client/search";
 import { NotFound } from "../pages/notfound";
 import { ConfirmEmail } from "../pages/user/confirm-email";
 import { EditProfile } from "../pages/user/edit-profile";
-import { Search } from "../pages/client/search";
-import { Category } from "../pages/client/category";
 
 const ClientRoutes = [
     <Route key={1} path="/" exact>

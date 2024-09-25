@@ -1,5 +1,6 @@
-import { gql } from "@apollo/client"
-import React from "react"
+import { gql, useQuery } from "@apollo/client"
+import { useLocation, useParams } from "react-router-dom"
+import { CategoryQueryQuery, CategoryQueryQueryVariables } from "../../__generated__/graphql"
 
 const CATEGORY_QUERY = gql`
     query categoryQuery($input: CategoryInput!) {
@@ -21,8 +22,21 @@ const CATEGORY_QUERY = gql`
         }
     }
 `
+interface ICategoryParams {
+    slug: string
+}
 
 export const Category = () => {
+    const location = useLocation()
+    const params = useParams<ICategoryParams>()
+    const {data, loading} = useQuery<CategoryQueryQuery, CategoryQueryQueryVariables>(CATEGORY_QUERY, {
+        variables: {
+            input: {
+                page: 1,
+                slug: params.slug
+            }
+        }
+    })
     return (
         <div>
             <h1>Category</h1>

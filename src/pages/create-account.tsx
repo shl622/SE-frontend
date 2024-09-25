@@ -1,12 +1,11 @@
-import React from "react"
-import { useForm } from "react-hook-form"
-import { FormError } from "../components/form-error"
 import { ApolloError, gql, useMutation } from "@apollo/client"
+import { Helmet, HelmetProvider } from "react-helmet-async"
+import { useForm } from "react-hook-form"
+import { Link, useHistory } from "react-router-dom"
 import { CreateAccountMutation, CreateAccountMutationVariables, UserRole } from "../__generated__/graphql"
 import eatsLogo from "../assets/horizontal-logo.png"
 import { Button } from "../components/button"
-import { Link, useHistory } from "react-router-dom"
-import { Helmet, HelmetProvider } from "react-helmet-async"
+import { FormError } from "../components/form-error"
 import { EMAIL_REGEX } from "../constants"
 
 const CREATE_ACCOUNT_MUTATION = gql`

@@ -1,11 +1,11 @@
 import { gql, useQuery } from "@apollo/client";
-import React, { useState } from "react";
+import { useState } from "react";
 import { Helmet, HelmetProvider } from "react-helmet-async";
-import { RestaurantsPageQueryQuery, RestaurantsPageQueryQueryVariables } from "../../__generated__/graphql";
-import { Restaurant } from "../../components/restaurant";
-import { Category } from "../../components/category";
 import { useForm } from "react-hook-form";
 import { Link, useHistory } from "react-router-dom";
+import { RestaurantsPageQueryQuery, RestaurantsPageQueryQueryVariables } from "../../__generated__/graphql";
+import { Category } from "../../components/category";
+import { Restaurant } from "../../components/restaurant";
 
 const RESTAURANTS_QUERY = gql`
     query restaurantsPageQuery($input: RestaurantsInput!) {

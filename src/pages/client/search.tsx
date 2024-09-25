@@ -1,5 +1,5 @@
 import { gql, useLazyQuery } from "@apollo/client";
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { Helmet, HelmetProvider } from "react-helmet-async";
 import { useHistory, useLocation } from "react-router-dom";
 import { SearchRestaurantsQuery, SearchRestaurantsQueryVariables } from "../../__generated__/graphql";

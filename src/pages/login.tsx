@@ -1,13 +1,12 @@
-import React from "react"
-import { useForm } from "react-hook-form"
-import { FormError } from "../components/form-error"
 import { ApolloError, gql, useMutation } from "@apollo/client"
+import { Helmet, HelmetProvider } from "react-helmet-async"
+import { useForm } from "react-hook-form"
+import { Link } from "react-router-dom"
 import { LoginMutation, LoginMutationVariables } from "../__generated__/graphql"
+import { authToken, isLoggedInVar } from "../apollo"
 import eatsLogo from "../assets/horizontal-logo.png"
 import { Button } from "../components/button"
-import { Link } from "react-router-dom"
-import { Helmet, HelmetProvider } from "react-helmet-async"
-import { authToken, isLoggedInVar } from "../apollo"
+import { FormError } from "../components/form-error"
 import { LOCALSTORAGE_TOKEN } from "../constants"
 
 const LOGIN_MUTATION = gql`

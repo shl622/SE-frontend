@@ -1,11 +1,10 @@
-import React from "react"
-import { useCurrAuth } from "../../hooks/useCurrAuth"
-import { Button } from "../../components/button"
-import { useForm } from "react-hook-form"
 import { gql, useApolloClient, useMutation } from "@apollo/client"
-import { EditProfileMutation, EditProfileMutationVariables } from "../../__generated__/graphql"
-import { EMAIL_REGEX } from "../../constants"
 import { Helmet, HelmetProvider } from "react-helmet-async"
+import { useForm } from "react-hook-form"
+import { EditProfileMutation, EditProfileMutationVariables } from "../../__generated__/graphql"
+import { Button } from "../../components/button"
+import { EMAIL_REGEX } from "../../constants"
+import { useCurrAuth } from "../../hooks/useCurrAuth"
 const EDIT_PROFILE_MUTATION = gql`
     mutation editProfile($input: EditProfileInput!) {
         editProfile(input: $input) {
