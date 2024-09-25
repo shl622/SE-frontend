@@ -55,17 +55,17 @@ export const Restaurants = () => {
                     <title>Restaurants | Super Eats</title>
                 </Helmet>
             </HelmetProvider>
-            <form className="bg-teal-950 w-full py-40 flex items-center justify-center">
-                <input className="input w-2/4 rounded-md border-0 px-5 py-2.5 placeholder-gray-500" type="search" placeholder="What are you craving today?" />
+            <form className="bg-teal-950 w-full py-20 md:py-40 flex items-center justify-center px-4 md:px-0">
+                <input className="input w-3/4 rounded-md border-0 px-5 py-2.5 placeholder-gray-500 md:w-1/2" type="search" placeholder="What are you craving today?" />
             </form>
             {!loading &&
-                <div className="max-w-screen-xl mx-auto mt-5 pb-20">
-                    <div className="flex justify-around mx-auto">
+                <div className="max-w-screen-2xl mx-auto mt-5 pb-20">
+                    <div className="grid grid-cols-4 gap-x-4 gap-y-6 mx-auto px-4 md:flex md:justify-around md:px-0">
                         {data?.allCategories.categories?.map(category => (
                             <Category key={category.id} coverImg={category.coverImg} name={category.name} />
                         ))}
                     </div>
-                    <div className="grid grid-cols-3 gap-7 mt-10">
+                    <div className="grid px-4 md:px-1 md:grid-cols-3 gap-7 mt-10">
                         {data?.restaurants.results?.map((restaurant) => (
                             <Restaurant key={restaurant.id} id={restaurant.id + ""} coverImg={restaurant.coverImg} name={restaurant.name} categoryName={restaurant.category?.name} />
                         ))}
