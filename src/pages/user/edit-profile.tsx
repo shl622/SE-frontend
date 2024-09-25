@@ -2,7 +2,7 @@ import React from "react"
 import { useCurrAuth } from "../../hooks/useCurrAuth"
 import { Button } from "../../components/button"
 import { useForm } from "react-hook-form"
-import { gql, useMutation } from "@apollo/client"
+import { gql, useApolloClient, useMutation } from "@apollo/client"
 import { EditProfileMutation, EditProfileMutationVariables } from "../../__generated__/graphql"
 import { EMAIL_REGEX } from "../../constants"
 const EDIT_PROFILE_MUTATION = gql`
@@ -21,11 +21,29 @@ interface IFormProps {
 
 export const EditProfile = () => {
     const { data: userData } = useCurrAuth()
+    const client = useApolloClient()
     const [editProfile, { loading }] = useMutation<EditProfileMutation, EditProfileMutationVariables>(EDIT_PROFILE_MUTATION, {
         onCompleted: (data: EditProfileMutation) => {
             const { editProfile: { ok } } = data
-            if (ok) {
+            if (ok && userData) {
                 //update the cache
+                const { currAuth: { email:prevEmail, id } } = userData
+                const {email: newEmail} = getValues()
+                if(prevEmail !== newEmail){
+                    client.writeFragment({
+                        id: `User:${id}`,
+                        fragment: gql`
+                            fragment UpdatedUser on User {
+                                verified
+                                email
+                            }
+                        `,
+                        data: { 
+                            email: newEmail,
+                            verified: false 
+                        }
+                    })
+                }
                 console.log('Profile updated successfully')
             }
         }
