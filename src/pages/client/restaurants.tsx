@@ -2,6 +2,8 @@ import { gql, useQuery } from "@apollo/client";
 import React from "react";
 import { Helmet, HelmetProvider } from "react-helmet-async";
 import { RestaurantsPageQueryQuery, RestaurantsPageQueryQueryVariables } from "../../__generated__/graphql";
+import { Restaurant } from "../../components/restaurant";
+import { Category } from "../../components/category";
 
 const RESTAURANTS_QUERY = gql`
     query restaurantsPageQuery($input: RestaurantsInput!) {
@@ -56,20 +58,10 @@ export const Restaurants = () => {
             {!loading &&
                 <div className="max-w-screen-xl mx-auto mt-5">
                     <div className="flex justify-around mx-auto">
-                        {data?.allCategories.categories?.map(category => <div key={category.id} className="flex flex-col items-center group">
-                            <div key={category.id} className="w-16 h-16 rounded-full bg-cover group-hover:bg-gray-200 cursor-pointer"
-                                style={{ backgroundImage: `url(${category.coverImg})` }}></div>
-                            <span key={category.name} className="mt-1 text-gray-800 text-sm font-medium cursor-pointer">{category.name}</span>
-                        </div>)}
+                        {data?.allCategories.categories?.map(category => <Category key={category.id} coverImg={category.coverImg} name={category.name} />)}
                     </div>
                     <div className="grid grid-cols-3 gap-7 mt-10">
-                        {data?.restaurants.results?.map((restaurant) => (
-                            <div key={restaurant.id}>
-                            <div className="py-28 bg-cover bg-center mb-2"
-                                style={{ backgroundImage: `url(${restaurant.coverImg})` }}></div>
-                            <span key={restaurant.name} className="mt-1 text-gray-800 text-lg font-medium">{restaurant.name}</span>
-                            <span key={restaurant.category?.name} className="mt-1 text-gray-500 text-sm font-medium">{restaurant.category?.name}</span>
-                        </div>))}
+                        {data?.restaurants.results?.map((restaurant) => (<Restaurant key={restaurant.id} coverImg={restaurant.coverImg} name={restaurant.name} categoryName={restaurant.category?.name} />))}
                     </div>
                 </div>
             }
