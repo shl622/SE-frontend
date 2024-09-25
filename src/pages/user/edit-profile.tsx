@@ -5,6 +5,7 @@ import { useForm } from "react-hook-form"
 import { gql, useApolloClient, useMutation } from "@apollo/client"
 import { EditProfileMutation, EditProfileMutationVariables } from "../../__generated__/graphql"
 import { EMAIL_REGEX } from "../../constants"
+import { Helmet, HelmetProvider } from "react-helmet-async"
 const EDIT_PROFILE_MUTATION = gql`
     mutation editProfile($input: EditProfileInput!) {
         editProfile(input: $input) {
@@ -67,6 +68,11 @@ export const EditProfile = () => {
     }
     return (
         <div className="flex flex-col items-center justify-center mt-10 lg:mt-32">
+            <HelmetProvider>
+                <Helmet>
+                    <title>Edit Profile | Super Eats</title>
+                </Helmet>
+            </HelmetProvider>
             <h4 className="font-semibold text-2xl mb-3">Edit Profile</h4>
             <h4 className="font-medium text-md mb-1">Updating your profile will require you to verify your new email</h4>
             <form className="grid gap-3 mt-5 mb-5 w-full max-w-screen-sm" onSubmit={handleSubmit(onSubmit)}>
