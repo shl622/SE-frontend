@@ -15,8 +15,10 @@ export const Header: React.FC = () => {
                 </div>}
             <header className="py-4">
                 <div className="w-full px-5 xl:px-0max-w-screen-xl mx-auto flex justify-between items-center">
-                    <img src={eatsLogo} className="w-12" alt="Super Eats" />
-                    <span className="text-xs flex items-center">
+                    <Link to="/">
+                        <img src={eatsLogo} className="w-12" alt="Super Eats" />
+                    </Link>
+                    <span className="text-xs flex items-center gap-2">
                         <Link to="/edit-profile">
                             <FontAwesomeIcon icon={faUser} />
                         </Link>
