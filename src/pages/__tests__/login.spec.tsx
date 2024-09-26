@@ -29,11 +29,17 @@ describe("<Login/>", () => {
         })
     })
     it("should display email validation error", async () => {
-        const {getByPlaceholderText, debug } = renderResult
-        const emailInput = getByPlaceholderText("Email")
+        const {getByPlaceholderText, getByRole } = renderResult
+        const emailInput = getByPlaceholderText(/email/i)
         await waitFor(() => {
             userEvent.type(emailInput, "te")
         })
-        debug()
+        let errorMessage = getByRole("alert")
+        expect(errorMessage).toHaveTextContent(/please enter a valid email/i)
+        await waitFor(() => {
+            userEvent.clear(emailInput)
+        })
+        errorMessage = getByRole("alert")
+        expect(errorMessage).toHaveTextContent(/email is required/i)
     })
 })

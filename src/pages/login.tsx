@@ -59,7 +59,7 @@ export const Login = () => {
                 <h4 className="w-full font-urbanist text-left text-2xl mb-5">Welcome back</h4>
                 <form onSubmit={handleSubmit(onSubmit)} className="grid gap-3 mt-2 w-full mb-3">
                     <input
-                        {...register("email", { required: "Please enter a valid email", pattern: { value: EMAIL_REGEX, message: "Please enter a valid email" } })}
+                        {...register("email", { required: "Email is required", pattern: { value: EMAIL_REGEX, message: "Please enter a valid email" } })}
                         type="email"
                         required
                         className="input transition-colors"
