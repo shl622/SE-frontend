@@ -9,7 +9,7 @@ import { Button } from "../components/button"
 import { FormError } from "../components/form-error"
 import { EMAIL_REGEX, LOCALSTORAGE_TOKEN } from "../constants"
 
-const LOGIN_MUTATION = gql`
+export const LOGIN_MUTATION = gql`
     mutation login($loginInput:LoginInput!){
         login(input: $loginInput){
             ok
@@ -38,13 +38,9 @@ export const Login = () => {
         }
     })
     const onSubmit = async () => {
-        try {
-            if (!loading) {
-                const { email, password } = getValues()
-                await loginMutation({ variables: { loginInput: { email, password } } })
-            }
-        } catch (error) {
-            console.error('Login error:', error)
+        if (!loading) {
+            const { email, password } = getValues()
+            await loginMutation({ variables: { loginInput: { email, password } } })
         }
     }
     return (
@@ -63,7 +59,7 @@ export const Login = () => {
                         type="email"
                         required
                         className="input transition-colors"
-                        placeholder="Email"/>
+                        placeholder="Email" />
                     {errors.email?.message && <FormError errorMessage={errors.email.message} />}
                     <input
                         {...register("password", { required: "Password is required", minLength: 5 })}

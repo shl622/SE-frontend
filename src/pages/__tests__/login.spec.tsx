@@ -4,14 +4,15 @@ import userEvent from "@testing-library/user-event"
 import { createMockClient } from "mock-apollo-client"
 import { HelmetProvider } from "react-helmet-async"
 import { BrowserRouter as Router } from "react-router-dom"
-import { Login } from "../login"
+import { Login, LOGIN_MUTATION } from "../login"
 
 
 describe("<Login/>", () => {
     let renderResult: RenderResult
+    let mockedClient: ReturnType<typeof createMockClient>
     beforeEach(async () => {
         await waitFor(() => {
-            const mockedClient = createMockClient()
+            mockedClient = createMockClient()
             renderResult = render(
                 <HelmetProvider>
                     <ApolloProvider client={mockedClient}>
@@ -41,5 +42,49 @@ describe("<Login/>", () => {
         })
         errorMessage = getByRole("alert")
         expect(errorMessage).toHaveTextContent(/email is required/i)
+    })
+    it("should display password validation error", async () => {
+        const {getByPlaceholderText, getByRole } = renderResult
+        const passwordInput = getByPlaceholderText(/password/i)
+        await waitFor(() => {
+            userEvent.type(passwordInput, "123")
+        })
+        let errorMessage = getByRole("alert")
+        expect(errorMessage).toHaveTextContent(/password must be at least 5 characters/i)
+        await waitFor(() => {
+            userEvent.clear(passwordInput)
+        })
+        errorMessage = getByRole("alert")
+        expect(errorMessage).toHaveTextContent(/password is required/i)
+    })
+    it("should submit form and call mutation", async () => {
+        const formData = {
+            email: "test@test.com",
+            password: "123123"
+        }
+        const {getByPlaceholderText, getByRole } = renderResult
+        const emailInput = getByPlaceholderText(/email/i)
+        const passwordInput = getByPlaceholderText(/password/i)
+        const submitButton = getByRole("button")
+        const mockedMutationResponse = jest.fn().mockResolvedValue({
+            data: {
+                login: {
+                    ok: true,
+                    token: "test-token",
+                    error: null
+                }
+            }
+        })
+        mockedClient.setRequestHandler(LOGIN_MUTATION, mockedMutationResponse)
+        await waitFor(() => {
+            userEvent.type(emailInput, formData.email)
+            userEvent.type(passwordInput, formData.password)
+            userEvent.click(submitButton)
+        })
+        expect(mockedMutationResponse).toHaveBeenCalledTimes(1)
+        expect(mockedMutationResponse).toHaveBeenCalledWith({ loginInput: {
+            email: formData.email,
+            password: formData.password
+        } })
     })
 })
