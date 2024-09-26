@@ -1,11 +1,11 @@
 import { gql, useQuery } from "@apollo/client";
-import React, { useState } from "react";
+import { useState } from "react";
 import { Helmet, HelmetProvider } from "react-helmet-async";
-import { RestaurantsPageQueryQuery, RestaurantsPageQueryQueryVariables } from "../../__generated__/graphql";
-import { Restaurant } from "../../components/restaurant";
-import { Category } from "../../components/category";
 import { useForm } from "react-hook-form";
-import { useHistory } from "react-router-dom";
+import { Link, useHistory } from "react-router-dom";
+import { RestaurantsPageQueryQuery, RestaurantsPageQueryQueryVariables } from "../../__generated__/graphql";
+import { Category } from "../../components/category";
+import { Restaurant } from "../../components/restaurant";
 
 const RESTAURANTS_QUERY = gql`
     query restaurantsPageQuery($input: RestaurantsInput!) {
@@ -54,11 +54,11 @@ export const Restaurants = () => {
     })
     const onNextPageClick = () => setPage((current) => current + 1)
     const onPrevPageClick = () => setPage((current) => current - 1)
-    const { register, handleSubmit,getValues } = useForm<IFormProps>()
+    const { register, handleSubmit, getValues } = useForm<IFormProps>()
     const onSearchSubmit = () => {
-        const {searchQuery} = getValues()
+        const { searchQuery } = getValues()
         history.push({
-            pathname:"/search",
+            pathname: "/search",
             search: `?term=${searchQuery}`
         })
     }
@@ -79,7 +79,9 @@ export const Restaurants = () => {
                 <div className="max-w-screen-2xl mx-auto mt-5 pb-20">
                     <div className="grid grid-cols-4 gap-x-4 gap-y-6 mx-auto px-4 md:flex md:justify-around md:px-0">
                         {data?.allCategories.categories?.map(category => (
-                            <Category key={category.id} coverImg={category.coverImg} name={category.name} />
+                            <Link to={`/category/${category.slug}`} key={category.id}>
+                                <Category key={category.id} coverImg={category.coverImg} name={category.name} />
+                            </Link>
                         ))}
                     </div>
                     <div className="grid px-4 md:px-1 md:grid-cols-3 gap-7 mt-10">
