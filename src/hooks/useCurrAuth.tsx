@@ -1,7 +1,7 @@
 import { gql, useQuery } from "@apollo/client";
 import { CurrAuthQuery } from "../__generated__/graphql";
 
-const CURRAUTH_QUERY = gql`
+export const CURRAUTH_QUERY = gql`
     query currAuth{
         currAuth{
             id

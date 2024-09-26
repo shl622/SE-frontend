@@ -4,8 +4,7 @@ import { FormError } from "../form-error"
 
 describe("<FormError/>",()=>{
     it("should render successfully",()=>{
-        const {getByText,debug} = render(<FormError errorMessage={"test"}/>)
+        const {getByText} = render(<FormError errorMessage={"test"}/>)
         getByText("test")
-        debug()
     })
 })
