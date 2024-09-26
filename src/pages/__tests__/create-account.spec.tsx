@@ -1,29 +1,23 @@
 import { ApolloProvider } from "@apollo/client"
 import { render, RenderResult, waitFor } from "../../test-utils"
-import userEvent from "@testing-library/user-event"
+import { CREATE_ACCOUNT_MUTATION, CreateAccount } from "../create-account"
 import { createMockClient, MockApolloClient } from "mock-apollo-client"
-import { HelmetProvider } from "react-helmet-async"
-import { BrowserRouter as Router } from "react-router-dom"
-import { LOCALSTORAGE_TOKEN } from "../../constants"
-import { Login, LOGIN_MUTATION } from "../login"
+import userEvent from "@testing-library/user-event"
 
-
-describe("<Login/>", () => {
-    let renderResult: RenderResult
+describe("Create Account", () => {
     let mockedClient: MockApolloClient
-    beforeEach(async () => {
-        await waitFor(() => {
-            mockedClient = createMockClient()
-            renderResult = render(
-                <ApolloProvider client={mockedClient}>
-                    <Login />
-                </ApolloProvider>
-            )
-        })
+    let renderResult: RenderResult
+    beforeEach(() => {
+        mockedClient = createMockClient()
+        renderResult = render(
+            <ApolloProvider client={mockedClient}>
+                <CreateAccount />
+            </ApolloProvider>
+        )
     })
     it("should render successfully", async () => {
         await waitFor(() => {
-            expect(document.title).toBe("Login | Super Eats")
+            expect(document.title).toBe("Signup | Super Eats")
         })
     })
     it("should display email validation error", async () => {
@@ -57,71 +51,72 @@ describe("<Login/>", () => {
     it("should submit form and call mutation", async () => {
         const formData = {
             email: "test@test.com",
-            password: "123123"
+            password: "123123",
+            role: "Client"
         }
         const { getByPlaceholderText, getByRole } = renderResult
         const emailInput = getByPlaceholderText(/email/i)
         const passwordInput = getByPlaceholderText(/password/i)
+        const roleInput = getByRole("select")
         const submitButton = getByRole("button")
         const mockedMutationResponse = jest.fn().mockResolvedValue({
             data: {
-                login: {
+                createAccount: {
                     ok: true,
-                    token: "test-token",
                     error: null
                 }
             }
         })
-        mockedClient.setRequestHandler(LOGIN_MUTATION, mockedMutationResponse)
-        jest.spyOn(Storage.prototype, "setItem")
+        mockedClient.setRequestHandler(CREATE_ACCOUNT_MUTATION, mockedMutationResponse)
         await waitFor(() => {
             userEvent.type(emailInput, formData.email)
             userEvent.type(passwordInput, formData.password)
+            userEvent.selectOptions(roleInput, formData.role)
             userEvent.click(submitButton)
         })
         expect(mockedMutationResponse).toHaveBeenCalledTimes(1)
         expect(mockedMutationResponse).toHaveBeenCalledWith({
-            loginInput: {
+            createAccountInput: {
                 email: formData.email,
-                password: formData.password
+                password: formData.password,
+                role: formData.role
             }
         })
-        expect(localStorage.setItem).toHaveBeenCalledWith(LOCALSTORAGE_TOKEN, "test-token")
     })
-    it("should display login error", async () => {
+    it("should display signup error", async () => {
         const formData = {
             email: "test@test.com",
-            password: "123123"
+            password: "123123",
+            role: "Client"
         }
-        const { getByPlaceholderText, getByRole, queryByRole, debug } = renderResult
+        const { getByPlaceholderText, getByRole } = renderResult
         const emailInput = getByPlaceholderText(/email/i)
         const passwordInput = getByPlaceholderText(/password/i)
+        const roleInput = getByRole("select")
         const submitButton = getByRole("button")
         const mockedMutationResponse = jest.fn().mockResolvedValue({
             data: {
-                login: {
+                createAccount: {
                     ok: false,
-                    token: null,
-                    error: "Something went wrong. Please try again."
+                    error: "Signup failed"
                 }
             }
         })
-        mockedClient.setRequestHandler(LOGIN_MUTATION, mockedMutationResponse)
+        mockedClient.setRequestHandler(CREATE_ACCOUNT_MUTATION, mockedMutationResponse)
         await waitFor(() => {
             userEvent.type(emailInput, formData.email)
             userEvent.type(passwordInput, formData.password)
+            userEvent.selectOptions(roleInput, formData.role)
             userEvent.click(submitButton)
         })
         expect(mockedMutationResponse).toHaveBeenCalledTimes(1)
         expect(mockedMutationResponse).toHaveBeenCalledWith({
-            loginInput: {
+            createAccountInput: {
                 email: formData.email,
-                password: formData.password
+                password: formData.password,
+                role: formData.role
             }
         })
-        await waitFor(() => {
-            const errorMessage = queryByRole("alert")
-            expect(errorMessage).toHaveTextContent(/something went wrong. please try again/i)
-        }, { timeout: 3000 })
+        expect(getByRole("alert")).toHaveTextContent(/signup failed/i)
     })
 })

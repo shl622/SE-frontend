@@ -1,16 +1,10 @@
-import { render, waitFor } from "@testing-library/react"
+import { render, RenderResult, waitFor } from "../../test-utils"
 import { NotFound } from "../notfound"
-import { BrowserRouter as Router } from "react-router-dom"
-import { HelmetProvider } from "react-helmet-async"
 
 describe("<NotFound/>", () => {
     it("should render successfully", async () => {
         render(
-            <HelmetProvider>
-                <Router>
-                    <NotFound />
-                </Router>
-            </HelmetProvider>
+            <NotFound />
         )
         await waitFor(() => {
             expect(document.title).toBe("Not Found | Super Eats")
