@@ -50,7 +50,7 @@ export const Search = () => {
     const [searchQuery, setSearchQuery] = useState("")
     useEffect(() => {
         const [_, searchQuery] = location.search.split("?term=")
-        const safeQuery = searchQuery || ""
+        const safeQuery = decodeURIComponent(searchQuery) || ""
         setSearchQuery(safeQuery)
         console.log("searchQuery", searchQuery)
         if (!searchQuery) {
@@ -68,7 +68,7 @@ export const Search = () => {
             variables: {
                 input: {
                     page: 1,
-                    slug: searchQuery
+                    slug: searchQuery.trim().toLowerCase().replace(/ /g, "-")
                 }
             }
         })
@@ -79,8 +79,8 @@ export const Search = () => {
             <HelmetProvider>
                 <Helmet>
                     <title>
-                        {searchQuery 
-                            ? `Search Results for ${searchQuery} | Super Eats` 
+                        {searchQuery
+                            ? `Search Results for ${searchQuery} | Super Eats`
                             : "Search | Super Eats"}
                     </title>
                 </Helmet>
@@ -95,14 +95,18 @@ export const Search = () => {
             {!loading && !categoryLoading && (
                 <div className="px-4">
                     {/* Category Results */}
-                    {categoryData?.category?.category && (
+                    <h2 className="border-b-2 border-gray-300 pb-2 text-xl font-semibold mb-4">Category</h2>
+                    {categoryData?.category?.category ? (
                         <div className="mb-8">
-                            <h2 className="border-b-2 border-gray-300 pb-2 text-xl font-semibold mb-4">Category</h2>
                             <div className="flex items-center space-x-4">
-                                <Link to={`/category/${categoryData?.category?.category?.slug + ""}`}>
-                                    <Category coverImg={categoryData?.category?.category?.coverImg} name={categoryData?.category?.category?.name} />
+                                <Link to={`/category/${categoryData.category.category.slug + ""}`}>
+                                    <Category coverImg={categoryData.category.category.coverImg} name={categoryData.category.category.name} />
                                 </Link>
                             </div>
+                        </div>
+                    ) : (
+                        <div className="text-center text-xl text-gray-600 mb-8">
+                            No matching categories were found.
                         </div>
                     )}
 
