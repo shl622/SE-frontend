@@ -1,29 +1,25 @@
 import { ApolloProvider } from "@apollo/client"
-import { queryByRole, render, RenderResult, waitFor } from "@testing-library/react"
+import { render, RenderResult, waitFor } from "../../test-utils"
 import userEvent from "@testing-library/user-event"
-import { createMockClient } from "mock-apollo-client"
+import { createMockClient, MockApolloClient } from "mock-apollo-client"
 import { HelmetProvider } from "react-helmet-async"
 import { BrowserRouter as Router } from "react-router-dom"
-import { Login, LOGIN_MUTATION } from "../login"
 import { LOCALSTORAGE_TOKEN } from "../../constants"
+import { Login, LOGIN_MUTATION } from "../login"
 
 
 describe("<Login/>", () => {
     let renderResult: RenderResult
-    let mockedClient: ReturnType<typeof createMockClient>
+    let mockedClient: MockApolloClient
     beforeEach(async () => {
         await waitFor(() => {
             mockedClient = createMockClient()
             renderResult = render(
-                <HelmetProvider>
-                    <ApolloProvider client={mockedClient}>
-                        <Router>
-                            <Login />
-                        </Router>
-                    </ApolloProvider>
-                </HelmetProvider>
+                <ApolloProvider client={mockedClient}>
+                    <Login />
+                </ApolloProvider>
             )
-        }) 
+        })
     })
     it("should render successfully", async () => {
         await waitFor(() => {
@@ -31,7 +27,7 @@ describe("<Login/>", () => {
         })
     })
     it("should display email validation error", async () => {
-        const {getByPlaceholderText, getByRole } = renderResult
+        const { getByPlaceholderText, getByRole } = renderResult
         const emailInput = getByPlaceholderText(/email/i)
         await waitFor(() => {
             userEvent.type(emailInput, "te")
@@ -45,7 +41,7 @@ describe("<Login/>", () => {
         expect(errorMessage).toHaveTextContent(/email is required/i)
     })
     it("should display password validation error", async () => {
-        const {getByPlaceholderText, getByRole } = renderResult
+        const { getByPlaceholderText, getByRole } = renderResult
         const passwordInput = getByPlaceholderText(/password/i)
         await waitFor(() => {
             userEvent.type(passwordInput, "123")
@@ -63,7 +59,7 @@ describe("<Login/>", () => {
             email: "test@test.com",
             password: "123123"
         }
-        const {getByPlaceholderText, getByRole } = renderResult
+        const { getByPlaceholderText, getByRole } = renderResult
         const emailInput = getByPlaceholderText(/email/i)
         const passwordInput = getByPlaceholderText(/password/i)
         const submitButton = getByRole("button")
@@ -84,10 +80,12 @@ describe("<Login/>", () => {
             userEvent.click(submitButton)
         })
         expect(mockedMutationResponse).toHaveBeenCalledTimes(1)
-        expect(mockedMutationResponse).toHaveBeenCalledWith({ loginInput: {
-            email: formData.email,
-            password: formData.password
-        } })
+        expect(mockedMutationResponse).toHaveBeenCalledWith({
+            loginInput: {
+                email: formData.email,
+                password: formData.password
+            }
+        })
         expect(localStorage.setItem).toHaveBeenCalledWith(LOCALSTORAGE_TOKEN, "test-token")
     })
     it("should display login error", async () => {
@@ -95,7 +93,7 @@ describe("<Login/>", () => {
             email: "test@test.com",
             password: "123123"
         }
-        const {getByPlaceholderText,getByRole, queryByRole, debug } = renderResult
+        const { getByPlaceholderText, getByRole, queryByRole, debug } = renderResult
         const emailInput = getByPlaceholderText(/email/i)
         const passwordInput = getByPlaceholderText(/password/i)
         const submitButton = getByRole("button")
@@ -115,13 +113,15 @@ describe("<Login/>", () => {
             userEvent.click(submitButton)
         })
         expect(mockedMutationResponse).toHaveBeenCalledTimes(1)
-        expect(mockedMutationResponse).toHaveBeenCalledWith({ loginInput: {
-            email: formData.email,
-            password: formData.password
-        } })
+        expect(mockedMutationResponse).toHaveBeenCalledWith({
+            loginInput: {
+                email: formData.email,
+                password: formData.password
+            }
+        })
         await waitFor(() => {
             const errorMessage = queryByRole("alert")
             expect(errorMessage).toHaveTextContent(/something went wrong. please try again/i)
-        },{timeout:3000})
+        }, { timeout: 3000 })
     })
 })
