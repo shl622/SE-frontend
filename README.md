@@ -6,3 +6,10 @@
 npm install
 npm run dev
 ```
+
+## Unit Testing
+
+```bash
+npm run test
+npm run test:cvg
+```
