@@ -1,4 +1,4 @@
-import { ApolloError, gql, useMutation } from "@apollo/client"
+import { gql, useMutation } from "@apollo/client"
 import { Helmet, HelmetProvider } from "react-helmet-async"
 import { useForm } from "react-hook-form"
 import { Link, useHistory } from "react-router-dom"
@@ -8,7 +8,7 @@ import { Button } from "../components/button"
 import { FormError } from "../components/form-error"
 import { EMAIL_REGEX } from "../constants"
 
-const CREATE_ACCOUNT_MUTATION = gql`
+export const CREATE_ACCOUNT_MUTATION = gql`
     mutation createAccount($createAccountInput:CreateAccountInput!){
         createAccount(input: $createAccountInput){
             ok
@@ -27,7 +27,8 @@ export const CreateAccount = () => {
     const { register, getValues, formState: { errors }, handleSubmit, formState } = useForm<ISignupForm>({
         defaultValues: {
             role: UserRole.Client
-        }
+        },
+        mode: "onChange"
     })
     const history = useHistory()
     const [createAccountMutation, { loading, data:createAccountMutationResult }] = useMutation<CreateAccountMutation, CreateAccountMutationVariables>(CREATE_ACCOUNT_MUTATION, {
@@ -37,21 +38,12 @@ export const CreateAccount = () => {
                 history.push("/")
                 console.log('Account created successfully')
             }
-        },
-        onError: (error: ApolloError) => {
-            console.error('Apollo error:', error);
-            console.error('Network error:', error.networkError);
-            console.error('GraphQL errors:', error.graphQLErrors);
         }
     })
     const onSubmit = async () => {
-        try {
-            if (!loading) {
-                const { email, password, role } = getValues()
-                await createAccountMutation({ variables: { createAccountInput: { email, password, role } } })
-            }
-        } catch (error) {
-            console.error('Signup error:', error)
+        if (!loading) {
+            const { email, password, role } = getValues()
+            await createAccountMutation({ variables: { createAccountInput: { email, password, role } } })
         }
     }
     return (
@@ -67,13 +59,12 @@ export const CreateAccount = () => {
                 <form onSubmit={handleSubmit(onSubmit)} className="grid gap-3 mt-2 w-full mb-3">
                     <input
                         {...register("email", {
-                            required: "Please enter an email", pattern: {
+                            required: "Email is required", pattern: {
                                 value: EMAIL_REGEX,
                                 message: "Please enter a valid email"
                             }
                         })}
                         type="email"
-                        required
                         className="input transition-colors"
                         placeholder="Email" />
                     {errors.email?.message && <FormError errorMessage={errors.email.message} />}
@@ -83,7 +74,9 @@ export const CreateAccount = () => {
                         required
                         className="input transition-colors"
                         placeholder="Password" />
-                    <select className="input" {...register("role", { required: true })}>
+                    {errors.password?.message && <FormError errorMessage={errors.password.message} />}
+                    {errors.password?.type === "minLength" && <FormError errorMessage="Password must be at least 5 characters" />}
+                    <select role="select" className="input" {...register("role", { required: true })}>
                         {Object.keys(UserRole).map((role, index) => <option key={index}>{role}</option>)}
                     </select>
                     <Button canClick={formState.isValid} loading={loading} actionText="Sign up" />
