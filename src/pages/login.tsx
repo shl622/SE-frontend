@@ -70,7 +70,7 @@ export const Login = () => {
                     {errors.password?.message && <FormError errorMessage={errors.password.message} />}
                     {errors.password?.type === "minLength" && <FormError errorMessage="Password must be at least 5 characters" />}
                     <Button canClick={formState.isValid} loading={loading} actionText="Log in" />
-                    {loginResult?.login.error && <FormError errorMessage={loginResult.login.error} />}
+                    {loginResult?.login.error && <FormError errorMessage="Something went wrong. Please try again." />}
                 </form>
                 <div>
                     New to Super Eats? <Link to="/create-account" className="text-lime-600 hover:underline">Create an Account</Link>
