@@ -16,7 +16,10 @@ export const Header: React.FC = () => {
             <header className="py-4">
                 <div className="w-full px-5 xl:px-0max-w-screen-xl mx-auto flex justify-between items-center">
                     <Link to="/">
-                        <img src={eatsLogo} className="w-12 border-2 border-lime-600 border-opacity-40 rounded-full" alt="Super Eats" />
+                        <div className="flex items-center gap-2">
+                            <img src={eatsLogo} className="w-12 border-2 border-lime-600 border-opacity-40 rounded-full" alt="Super Eats" />
+                            <h1 className="text-2xl font-semibold bg-gradient-to-r from-lime-600 to-green-400 text-transparent bg-clip-text">Super Eats</h1>
+                        </div>
                     </Link>
                     <span className="text-xs flex items-center gap-2">
                         <Link to="/edit-profile">
