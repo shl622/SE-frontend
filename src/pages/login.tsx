@@ -7,7 +7,7 @@ import { authToken, isLoggedInVar } from "../apollo"
 import eatsLogo from "../assets/horizontal-logo.png"
 import { Button } from "../components/button"
 import { FormError } from "../components/form-error"
-import { LOCALSTORAGE_TOKEN } from "../constants"
+import { EMAIL_REGEX, LOCALSTORAGE_TOKEN } from "../constants"
 
 const LOGIN_MUTATION = gql`
     mutation login($loginInput:LoginInput!){
@@ -24,7 +24,9 @@ interface ILoginForm {
 }
 
 export const Login = () => {
-    const { register, getValues, formState: { errors }, handleSubmit, formState } = useForm<ILoginForm>()
+    const { register, getValues, formState: { errors }, handleSubmit, formState } = useForm<ILoginForm>({
+        mode: "onChange"
+    })
     const [loginMutation, { data: loginResult, loading }] = useMutation<LoginMutation, LoginMutationVariables>(LOGIN_MUTATION, {
         onCompleted: (data: LoginMutation) => {
             const { login: { ok, token } } = data
@@ -33,11 +35,6 @@ export const Login = () => {
                 authToken(token)
                 isLoggedInVar(true)
             }
-        },
-        onError: (error: ApolloError) => {
-            console.error('Apollo error:', error);
-            console.error('Network error:', error.networkError);
-            console.error('GraphQL errors:', error.graphQLErrors);
         }
     })
     const onSubmit = async () => {
@@ -62,11 +59,11 @@ export const Login = () => {
                 <h4 className="w-full font-urbanist text-left text-2xl mb-5">Welcome back</h4>
                 <form onSubmit={handleSubmit(onSubmit)} className="grid gap-3 mt-2 w-full mb-3">
                     <input
-                        {...register("email", { required: "Please enter a valid email" })}
+                        {...register("email", { required: "Please enter a valid email", pattern: { value: EMAIL_REGEX, message: "Please enter a valid email" } })}
                         type="email"
                         required
                         className="input transition-colors"
-                        placeholder="Email" />
+                        placeholder="Email"/>
                     {errors.email?.message && <FormError errorMessage={errors.email.message} />}
                     <input
                         {...register("password", { required: "Password is required", minLength: 5 })}
