@@ -12,6 +12,7 @@ import { ConfirmEmail } from "../pages/user/confirm-email";
 import { EditProfile } from "../pages/user/edit-profile";
 import { Restaurant } from "../pages/client/restaurant";
 import { MyRestaurants } from "../pages/owner/myrestaurants";
+import { AddRestaurant } from "../pages/owner/add-restaurant";
 
 const clientRoutes = [
     {
@@ -47,6 +48,10 @@ const OwnerRoutes = [
     {
         path: "/",
         component: <MyRestaurants />
+    },
+    {
+        path: "/add-restaurant",
+        component: <AddRestaurant />
     }
 ]
 
