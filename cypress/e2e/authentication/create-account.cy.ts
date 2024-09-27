@@ -3,7 +3,7 @@ describe("create account page", () => {
     it("should display validation errors", () => {
         user.visit("/")
         user.findByText(/create an account/i).click()
-        user.url().should("include", "/create-account")
+        user.checkTitle("Signup")
         user.findByPlaceholderText(/email/i).type("test")
         user.findByRole("alert").should("have.text", "Please enter a valid email")
         user.findByPlaceholderText(/email/i).clear()
@@ -24,15 +24,7 @@ describe("create account page", () => {
             const { operationName } = req.body
             if (operationName && operationName === "createAccount") {
                 req.reply((res) => {
-                    res.send({
-                        data: {
-                            createAccount: {
-                                ok: true,
-                                error: null,
-                                __typename: "CreateAccountOutput"
-                            }
-                        }
-                    })
+                    res.send({ fixture: "authentication/create-account.json" })
                 })
             }
         })

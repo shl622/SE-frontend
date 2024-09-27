@@ -99,7 +99,7 @@ export const EditProfile = () => {
                     className="input" type="password" placeholder="Password" />
                 <Button loading={loading} canClick={formState.isValid} actionText={"Update Profile"} />
             </form>
-            <button
+            <button role="logout-button"
                 className="mt-1 w-full max-w-screen-sm font-medium text-lg text-white py-2.5 focus:outline-none bg-red-500 hover:bg-red-600 transition-colors"
                 onClick={handleLogout}>
                 Logout

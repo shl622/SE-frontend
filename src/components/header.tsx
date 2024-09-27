@@ -10,7 +10,7 @@ export const Header: React.FC = () => {
     return (
         <>
             {!data?.currAuth.verified &&
-                <div className="bg-red-500 text-center text-sm p-3">
+                <div role="verify-email" className="bg-red-500 text-center text-sm p-3">
                     <span>Please verify your email</span>
                 </div>}
             <header className="py-4">
