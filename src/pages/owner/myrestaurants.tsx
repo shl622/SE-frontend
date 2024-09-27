@@ -29,16 +29,16 @@ export const MyRestaurants = () => {
         <div>
             <HelmetProvider>
                 <Helmet>
-                    <title>Dashboard | Nuber Eats</title>
+                    <title>Dashboard | Super Eats</title>
                 </Helmet>
             </HelmetProvider>
             <div className="flex justify-between items-center mb-6 px-3 md:px-5">
                 <h1 className="text-2xl md:text-3xl font-bold">Owner Dashboard</h1>
                 <Link to="/add-restaurant" className="bg-lime-500 text-white px-4 py-2 rounded-md hover:bg-lime-600">
-                    + Add Restaurant
+                    + New Restaurant
                 </Link>
             </div>
-            
+
             <div className="grid grid-cols-2 gap-6">
                 <div className="bg-white p-4 rounded-lg shadow">
                     <h2 className="text-xl font-semibold mb-4">My Restaurants</h2>
@@ -54,17 +54,17 @@ export const MyRestaurants = () => {
                         </ul>
                     )}
                 </div>
-                
+
                 <div className="bg-white p-4 rounded-lg shadow">
                     <h2 className="text-xl font-semibold mb-4">Price Generated</h2>
                     {/* Add price generated content here */}
                 </div>
-                
+
                 <div className="bg-white p-4 rounded-lg shadow">
                     <h2 className="text-xl font-semibold mb-4">Current Orders</h2>
                     {/* Add current orders content here */}
                 </div>
-                
+
                 <div className="bg-white p-4 rounded-lg shadow">
                     <h2 className="text-xl font-semibold mb-4">Archived Orders</h2>
                     {/* Add archived orders content here */}
