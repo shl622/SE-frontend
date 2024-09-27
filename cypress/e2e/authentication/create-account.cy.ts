@@ -13,23 +13,35 @@ describe("create account page", () => {
         user.findByRole("alert").should("have.text", "Password is required")
         user.findByPlaceholderText(/password/i).type("test")
         user.findByRole("alert").should("have.text", "Password must be at least 5 characters")
-        user.findByPlaceholderText(/email/i).clear().type("cypress@cypress.com")
+        user.findByPlaceholderText(/email/i).clear().type("cypress@test.com")
         user.findByPlaceholderText(/password/i).clear().type("cypress")
         user.findByRole("select").select("Client")
         user.findByRole("button").should("not.have.class", "pointer-events-none").click()
         user.findByRole("alert").should("exist")
-        //check backend validation errors
     })
     it("should render the create account page", () => {
+        user.intercept("http://localhost:4000/graphql", (req) => {
+            const { operationName } = req.body
+            if (operationName && operationName === "createAccount") {
+                req.reply((res) => {
+                    res.send({
+                        data: {
+                            createAccount: {
+                                ok: true,
+                                error: null,
+                                __typename: "CreateAccountOutput"
+                            }
+                        }
+                    })
+                })
+            }
+        })
         user.visit("/create-account")
-        user.findByPlaceholderText(/email/i).type("cypress@cypress.com")
+        user.findByPlaceholderText(/email/i).type("cypress@test.com")
         user.findByPlaceholderText(/password/i).type("cypress")
         user.findByRole("select").select("Client")
-        // user.findByRole("button").should("not.have.class", "pointer-events-none").click()
-        // check that user can login again
-        // user.findByPlaceholderText(/email/i).type("cypress@cypress.com")
-        // user.findByPlaceholderText(/password/i).type("cypress")
-        // user.findByRole("button").should("not.have.class", "pointer-events-none").click()
-        // user.window().its("localStorage.super-eats-token").should("be.a","string")
+        user.findByRole("button").should("not.have.class", "pointer-events-none").click()
+        user.wait(1000)
+        user.login("cypress@test.com", "cypress")
     })
 })

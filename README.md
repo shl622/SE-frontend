@@ -17,5 +17,5 @@ npm run test:cvg
 ## E2E Cypress Testing
 
 ```bash
-npm run cy:open
+npm run test:cy
 ```
