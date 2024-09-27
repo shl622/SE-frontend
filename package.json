@@ -38,7 +38,7 @@
     "test:cvg": "npm test -- --coverage --watchAll=false",
     "eject": "react-scripts eject",
     "generate": "graphql-codegen",
-    "cy:open" : "npx cypress open"
+    "cy:open": "npx cypress open"
   },
   "eslintConfig": {
     "extends": [
@@ -70,6 +70,7 @@
     "@graphql-codegen/typescript": "^4.0.9",
     "@graphql-codegen/typescript-operations": "^4.2.3",
     "@parcel/watcher": "^2.4.1",
+    "@testing-library/cypress": "^10.0.2",
     "@testing-library/react": "^16.0.1",
     "tailwindcss": "^3.4.10"
   }
