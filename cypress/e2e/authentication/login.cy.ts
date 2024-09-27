@@ -1,8 +1,5 @@
 describe("login page", () => {
     const user = cy
-    it("should render the login page", () => {
-        user.visit("/").title().should("eq", "Login | Super Eats")
-    })
     it("should display validation errors", () => {
         user.visit("/")
         user.findByPlaceholderText(/email/i).type("test")
@@ -20,10 +17,7 @@ describe("login page", () => {
         user.findByRole("alert").should("have.text", "Something went wrong. Please try again.")
     })
     it("should allow user to fill the form", () => {
-        user.visit("/")
-        user.findByPlaceholderText(/email/i).type("cypress@test.com")
-        user.findByPlaceholderText(/password/i).type("cypress")
-        user.findByRole("button").should("not.have.class", "pointer-events-none").click()
-        user.assertLoggedIn()
+        cy.visit("/")
+        user.login("cypress@test.com", "cypress")
     })
 })

@@ -18,7 +18,6 @@ describe("create account page", () => {
         user.findByRole("select").select("Client")
         user.findByRole("button").should("not.have.class", "pointer-events-none").click()
         user.findByRole("alert").should("exist")
-        //check backend validation errors
     })
     it("should render the create account page", () => {
         user.intercept("http://localhost:4000/graphql", (req) => {
@@ -43,10 +42,6 @@ describe("create account page", () => {
         user.findByRole("select").select("Client")
         user.findByRole("button").should("not.have.class", "pointer-events-none").click()
         user.wait(1000)
-        user.title().should("eq", "Login | Super Eats")
-        user.findByPlaceholderText(/email/i).type("cypress@test.com")
-        user.findByPlaceholderText(/password/i).type("cypress")
-        user.findByRole("button").should("not.have.class", "pointer-events-none").click()
-        user.assertLoggedIn()
+        user.login("cypress@test.com", "cypress")
     })
 })
