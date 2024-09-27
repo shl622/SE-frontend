@@ -19,9 +19,8 @@ describe("login page", () => {
     it("should allow user to fill the form", () => {
         user.visit("/")
         user.findByPlaceholderText(/email/i).type("front1@gmail.com")
-        user.findByPlaceholderText(/password/i).type("123456")
-        user.findByRole("button")
-        user.should("not.have.class", "pointer-events-none")
-        //to-do: user can login
+        user.findByPlaceholderText(/password/i).type("asdf1234")
+        user.findByRole("button").should("not.have.class", "pointer-events-none").click()
+        user.window().its("localStorage.super-eats-token").should("be.a", "string")
     })
 })
