@@ -13,3 +13,9 @@ npm run dev
 npm run test
 npm run test:cvg
 ```
+
+## E2E Cypress Testing
+
+```bash
+npm run cy:open
+```
