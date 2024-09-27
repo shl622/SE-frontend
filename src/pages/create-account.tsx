@@ -36,7 +36,6 @@ export const CreateAccount = () => {
             const { createAccount: { ok } } = data
             if (ok) {
                 history.push("/")
-                console.log('Account created successfully')
             }
         }
     })
