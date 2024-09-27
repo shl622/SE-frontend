@@ -11,26 +11,43 @@ import { NotFound } from "../pages/notfound";
 import { ConfirmEmail } from "../pages/user/confirm-email";
 import { EditProfile } from "../pages/user/edit-profile";
 import { Restaurant } from "../pages/client/restaurant";
+import { MyRestaurants } from "../pages/owner/myrestaurants";
 
-const ClientRoutes = [
-    <Route key={1} path="/" exact>
-        <Restaurants />
-    </Route>,
-    <Route key={2} path="/confirm">
-        <ConfirmEmail />
-    </Route>,
-    <Route key={3} path="/edit-profile">
-        <EditProfile />
-    </Route>,
-    <Route key={4} path="/search">
-        <Search />
-    </Route>,
-    <Route key={5} path="/category/:slug">
-        <Category />
-    </Route>,
-    <Route key={6} path="/restaurant/:id">
-        <Restaurant />
-    </Route>
+const clientRoutes = [
+    {
+        path: "/",
+        component: <Restaurants />
+    },
+    {
+        path:"/search",
+        component: <Search />
+    },
+    {
+        path:"/category/:slug",
+        component: <Category />
+    },
+    {
+        path: "/restaurant/:id",
+        component: <Restaurant />
+    }
+]
+
+const commonRoutes = [
+    {
+        path: "/confirm",
+        component: <ConfirmEmail />
+    },
+    {
+        path: "/edit-profile",
+        component: <EditProfile />
+    }
+]
+
+const OwnerRoutes = [
+    {
+        path: "/",
+        component: <MyRestaurants />
+    }
 ]
 
 export const LoggedInRouter = () => {
@@ -38,22 +55,25 @@ export const LoggedInRouter = () => {
     if (!data || loading || error) {
         return <div>Loading...</div>
     }
-    if (data.currAuth?.role === UserRole.Owner) {
-        return (
-            <div>
-                <h1>Owner</h1>
-                <button onClick={() => {
-                    isLoggedInVar(false)
-                    localStorage.removeItem(LOCALSTORAGE_TOKEN)
-                }}>Log out</button>
-            </div>
-        )
-    }
     return (
         <Router>
             <Header />
             <Switch>
-                {data.currAuth?.role === UserRole.Client && ClientRoutes}
+                {data.currAuth?.role === UserRole.Client && clientRoutes.map(route =>(
+                    <Route key={route.path} path={route.path} exact>
+                        {route.component}
+                    </Route>
+                ))}
+                {commonRoutes.map(route =>(
+                    <Route key={route.path} path={route.path} exact>
+                        {route.component}
+                    </Route>
+                ))}
+                {data.currAuth?.role === UserRole.Owner && OwnerRoutes.map(route =>(
+                    <Route key={route.path} path={route.path} exact>
+                        {route.component}
+                    </Route>
+                ))}
                 <Route>
                     <NotFound />
                 </Route>
