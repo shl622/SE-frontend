@@ -36,3 +36,15 @@
 //   }
 // }
 import "@testing-library/cypress/add-commands"
+
+declare global {
+    namespace Cypress {
+        interface Chainable {
+            assertLoggedIn(): Chainable<void>
+        }
+    }
+}
+
+Cypress.Commands.add("assertLoggedIn", () => {
+    cy.window().its("localStorage.super-eats-token").should("be.a", "string")
+})

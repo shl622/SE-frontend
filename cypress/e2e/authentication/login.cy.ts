@@ -24,6 +24,6 @@ describe("login page", () => {
         user.findByPlaceholderText(/email/i).type("cypress@test.com")
         user.findByPlaceholderText(/password/i).type("cypress")
         user.findByRole("button").should("not.have.class", "pointer-events-none").click()
-        user.window().its("localStorage.super-eats-token").should("be.a", "string")
+        user.assertLoggedIn()
     })
 })
