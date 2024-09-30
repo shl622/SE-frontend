@@ -1,11 +1,12 @@
 import { gql, useMutation, useQuery } from "@apollo/client";
-import { AllCategoriesQuery, AllCategoriesQueryVariables, CreateRestaurantMutation, CreateRestaurantMutationVariables } from "../../__generated__/graphql";
-import { useForm } from "react-hook-form";
-import { Button } from "../../components/button";
-import { Helmet, HelmetProvider } from "react-helmet-async";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faImage } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useEffect, useState } from "react";
+import { Helmet, HelmetProvider } from "react-helmet-async";
+import { useForm } from "react-hook-form";
+import { useHistory } from "react-router-dom";
+import { AllCategoriesQuery, AllCategoriesQueryVariables, CreateRestaurantMutation, CreateRestaurantMutationVariables } from "../../__generated__/graphql";
+import { Button } from "../../components/button";
 import { FormError } from "../../components/form-error";
 
 const CREATE_RESTAURANT_MUTATION = gql`
@@ -13,6 +14,7 @@ const CREATE_RESTAURANT_MUTATION = gql`
         createRestaurant(input: $input) {
             ok
             error
+            restaurantId
         }
     }
 `
@@ -39,6 +41,7 @@ interface IFormProps {
 }
 
 export const AddRestaurant = () => {
+    const history = useHistory()
     const [createRestaurant, { data }] = useMutation<CreateRestaurantMutation, CreateRestaurantMutationVariables>(CREATE_RESTAURANT_MUTATION, {
         onCompleted: (data) => {
             const { ok, error } = data.createRestaurant
@@ -48,7 +51,6 @@ export const AddRestaurant = () => {
         }
     })
     const { data: categoriesData } = useQuery<AllCategoriesQuery, AllCategoriesQueryVariables>(ALL_CATEGORIES_QUERY)
-    const [selectedCategory, setSelectedCategory] = useState("")
     const { register, handleSubmit, formState: { errors, isValid }, getValues, formState, watch } = useForm<IFormProps>({
         mode: "onChange"
     })
@@ -65,6 +67,7 @@ export const AddRestaurant = () => {
     }, [watchFile])
     const onSubmit = async () => {
         try {
+            setUploadingImage(true)
             const { file, name, address, newCategory, categoryId } = getValues()
             const readFile = file[0]
             const formBody = new FormData()
@@ -78,7 +81,7 @@ export const AddRestaurant = () => {
             const categoryName = categoryId === "other"
                 ? newCategory.charAt(0).toUpperCase() + newCategory.slice(1)
                 : categoriesData?.allCategories.categories?.find(cat => cat.id === parseInt(categoryId))?.name
-            createRestaurant({
+            const result = await createRestaurant({
                 variables: {
                     input: {
                         name,
@@ -88,6 +91,9 @@ export const AddRestaurant = () => {
                     }
                 }
             })
+            if(result.data?.createRestaurant.ok){
+                history.push('/')
+            }
         } catch (error) {
             console.log(error)
         }

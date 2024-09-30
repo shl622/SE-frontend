@@ -30,7 +30,7 @@ interface IRestaurantParams {
     id: string
 }
 
-export const Restaurant = () => {
+export const Restaurant= () => {
     const params = useParams<IRestaurantParams>()
     const [restaurantName, setRestaurantName] = useState("")
     const [isModalOpen, setIsModalOpen] = useState(false)
@@ -56,7 +56,7 @@ export const Restaurant = () => {
                     </title>
                 </Helmet>
             </HelmetProvider>
-            <div className="bg-red-500 py-48 bg-cover bg-center" style={{ backgroundImage: `url(${data?.restaurant.restaurant?.coverImg})` }}>
+            <div className="py-48 bg-cover bg-center" style={{ backgroundImage: `url(${data?.restaurant.restaurant?.coverImg})` }}>
             </div>
             <div className="mt-5">
                 <div className="px-5 md:px-10 lg:px-20 xl:px-20">

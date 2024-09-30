@@ -2,6 +2,7 @@ import { gql, useQuery } from "@apollo/client"
 import { MyRestaurantsQuery, MyRestaurantsQueryVariables } from "../../__generated__/graphql"
 import { Helmet, HelmetProvider } from "react-helmet-async"
 import { Link } from "react-router-dom"
+import { Restaurant } from "../../components/restaurant"
 
 const MY_RESTAURANTS_QUERY = gql`
     query myRestaurants {
@@ -45,10 +46,10 @@ export const MyRestaurants = () => {
                     {data?.myRestaurants.ok && data.myRestaurants.myRestaurants?.length === 0 ? (
                         <p className="text-gray-600">You have no restaurants</p>
                     ) : (
-                        <ul>
+                        <ul className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
                             {data?.myRestaurants.myRestaurants?.map(restaurant => (
                                 <li key={restaurant.id} className="mb-2">
-                                    {restaurant.name}
+                                     <Restaurant key={restaurant.id} id={restaurant.id + ""} coverImg={restaurant.coverImg} name={restaurant.name} categoryName={restaurant.category?.name} />
                                 </li>
                             ))}
                         </ul>
