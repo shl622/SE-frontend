@@ -24,4 +24,4 @@ yarn-debug.log*
 yarn-error.log*
 
 #Ignore generated css files
-styles/styles.css
+/src/styles/styles.css
