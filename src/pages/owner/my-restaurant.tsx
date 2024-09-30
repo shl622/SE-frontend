@@ -24,6 +24,20 @@ const MY_RESTAURANT_QUERY = gql`
                 category {
                     name
                 }
+                menu{
+                    id
+                    name
+                    price
+                    description
+                    options{
+                        name
+                        extra
+                        choices{
+                            name
+                            extra
+                        }
+                    }
+                }
                 coverImg
                 address
                 isPromoted
@@ -48,7 +62,7 @@ export const MyRestaurant = () => {
             setRestaurantName(data.myRestaurant.restaurant?.name!)
         }
     }, [data])
-    return(
+    return (
         <div>
             <HelmetProvider>
                 <Helmet>
@@ -64,10 +78,10 @@ export const MyRestaurant = () => {
                     <div className="flex flex-col items-start">
                         <Link
                             to={`/restaurant/${restaurantId}/edit`}
-                            className="mb-2 text-sm bg-lime-600 text-white py-1 px-3 rounded hover:bg-lime-700 transition"
+                            className="mb-3 text-sm bg-lime-600 text-white py-1 px-3 rounded hover:bg-lime-700 transition"
                         >
                             <FontAwesomeIcon icon={faPencilAlt} className="mr-1" />
-                            Edit Restaurant
+                            Edit
                         </Link>
                         <div className="flex items-center gap-3">
                             <h1 className="text-3xl font-medium">{restaurantName}</h1>
@@ -78,9 +92,24 @@ export const MyRestaurant = () => {
                                 <FontAwesomeIcon icon={faCircleInfo} className="mr-1" />
                             </button>
                         </div>
-                        {data?.myRestaurant.restaurant?.isPromoted && (
-                            <span className="text-green-600 font-medium mt-1">Promoted</span>
-                        )}
+                        <div className="mt-2 flex items-center gap-3">
+                            {data?.myRestaurant.restaurant?.isPromoted ? (
+                                <span className="text-green-600 font-medium mt-1">Promoted</span>
+                            ) : (
+                                <Link
+                                    to={``}
+                                    className="mt-2 text-sm bg-green-600 text-white py-1 px-3 rounded hover:bg-green-700 transition"
+                                >
+                                    Purchase Promotion
+                                </Link>
+                            )}
+                            <Link
+                                to={`/restaurant/${restaurantId}/add-dish`}
+                                className="mt-2 text-sm bg-green-600 text-white py-1 px-3 rounded hover:bg-green-700 transition"
+                            >
+                                Add Menu Item
+                            </Link>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -104,6 +133,20 @@ export const MyRestaurant = () => {
                     </div>
                 </div>
             )}
+            <div>
+                {data?.myRestaurant.restaurant?.menu?.length === 0 ? (
+                    <h4 className="text-2xl font-medium text-center mt-10">Please upload menu items</h4>
+                ) : <div className="flex flex-col items-center">
+                    <h1 className="text-2xl font-medium text-center mt-10">Menu</h1>
+                    <div className="flex flex-col items-center">
+                        <ul>
+                            {data?.myRestaurant.restaurant?.menu?.map(menu => (
+                                <li key={menu.id}>{menu.name}</li>
+                            ))}
+                        </ul>
+                    </div>
+                </div>}
+            </div>
         </div>
 
     )
