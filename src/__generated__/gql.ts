@@ -22,6 +22,7 @@ const documents = {
     "\n    mutation createAccount($createAccountInput:CreateAccountInput!){\n        createAccount(input: $createAccountInput){\n            ok\n            error\n        }\n    }\n": types.CreateAccountDocument,
     "\n    mutation login($loginInput:LoginInput!){\n        login(input: $loginInput){\n            ok\n            error\n            token\n        }\n    }\n": types.LoginDocument,
     "\n    mutation createRestaurant($input: CreatesRestaurantInput!) {\n        createRestaurant(input: $input) {\n            ok\n            error\n        }\n    }\n": types.CreateRestaurantDocument,
+    "\n    query allCategories {\n        allCategories {\n            ok\n            error\n            categories {\n                id\n                name\n            }\n        }\n    }\n": types.AllCategoriesDocument,
     "\n    query myRestaurants {\n        myRestaurants {\n            ok\n            error\n            myRestaurants{\n                id\n                name\n                coverImg\n                category{\n                    name\n                }\n                address\n                isPromoted  \n            }\n        }\n    }\n": types.MyRestaurantsDocument,
     "\n    mutation verifyEmail($input: VerifyEmailInput!) {\n        verifyEmail(input: $input) {\n            ok\n            error\n        }\n    }\n": types.VerifyEmailDocument,
     "\n                        fragment VerifiedUser on User {\n                            verified\n                        }\n                    ": types.VerifiedUserFragmentDoc,
@@ -79,6 +80,10 @@ export function graphql(source: "\n    mutation login($loginInput:LoginInput!){\
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
 export function graphql(source: "\n    mutation createRestaurant($input: CreatesRestaurantInput!) {\n        createRestaurant(input: $input) {\n            ok\n            error\n        }\n    }\n"): (typeof documents)["\n    mutation createRestaurant($input: CreatesRestaurantInput!) {\n        createRestaurant(input: $input) {\n            ok\n            error\n        }\n    }\n"];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(source: "\n    query allCategories {\n        allCategories {\n            ok\n            error\n            categories {\n                id\n                name\n            }\n        }\n    }\n"): (typeof documents)["\n    query allCategories {\n        allCategories {\n            ok\n            error\n            categories {\n                id\n                name\n            }\n        }\n    }\n"];
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
