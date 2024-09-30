@@ -5,6 +5,8 @@ import { Button } from "../../components/button";
 import { Helmet, HelmetProvider } from "react-helmet-async";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faImage } from "@fortawesome/free-solid-svg-icons";
+import { useState } from "react";
+import { FormError } from "../../components/form-error";
 
 const CREATE_RESTAURANT_MUTATION = gql`
     mutation createRestaurant($input: CreatesRestaurantInput!) {
@@ -17,20 +19,49 @@ const CREATE_RESTAURANT_MUTATION = gql`
 
 interface IFormProps {
     name: string
-    image: File
+    file: FileList
     address: string
     categoryName: string
 }
 
 export const AddRestaurant = () => {
-    const [createRestaurant, { loading, data }] = useMutation<CreateRestaurantMutation, CreateRestaurantMutationVariables>(CREATE_RESTAURANT_MUTATION)
+    const [createRestaurant, { data }] = useMutation<CreateRestaurantMutation, CreateRestaurantMutationVariables>(CREATE_RESTAURANT_MUTATION,{
+        onCompleted: (data) => {
+            const { ok, error } = data.createRestaurant
+            if (ok){
+                setUploadingImage(false)
+            }
+        }
+    })
     const { register, handleSubmit, formState: { errors, isValid }, getValues, formState } = useForm<IFormProps>({
         mode: "onChange"
     })
-
-    const onSubmit = () => {
-        const { name, address, categoryName } = getValues()
-        console.log(getValues())
+    const [uploadingImage, setUploadingImage] = useState(false)
+    const onSubmit = async () => {
+        try {
+            const { file, name, address, categoryName } = getValues()
+            const readFile = file[0]
+            const formBody = new FormData()
+            formBody.append('file', readFile)
+            const {url:coverImg} = await (
+                await fetch('http://localhost:4000/uploads/', {
+                    method: 'POST',
+                    body: formBody
+                })
+            ).json()
+            createRestaurant({
+                variables: {
+                    input: {
+                        name,
+                        address,
+                        categoryName,
+                        coverImg,
+                    }
+                }
+            })
+        } catch (error) {
+            console.log(error)
+        }
     }
     return (
         <div className="max-w-screen-sm mx-auto mt-10 px-4">
@@ -50,7 +81,7 @@ export const AddRestaurant = () => {
             <form className="bg-white shadow-md rounded-lg p-6 flex flex-col gap-3" onSubmit={handleSubmit(onSubmit)}>
                 <div className="relative">
                     <input
-                        {...register("image", { required: "File is required" })}
+                        {...register("file", { required: "File is required" })}
                         type="file"
                         accept="image/*"
                         id="image-upload"
@@ -73,7 +104,8 @@ export const AddRestaurant = () => {
                     className="input"
                     type="text"
                     placeholder="Category Name" />
-                <Button loading={loading} canClick={formState.isValid} actionText="Add Restaurant" />
+                <Button loading={uploadingImage} canClick={formState.isValid} actionText="Add Restaurant" />
+                {data?.createRestaurant.error && <FormError errorMessage={data.createRestaurant.error} />}
             </form>
         </div>
     )
