@@ -4,6 +4,7 @@ import { CategoryQueryQuery, CategoryQueryQueryVariables } from "../../__generat
 import { Restaurant } from "../../components/restaurant"
 import { Helmet, HelmetProvider } from "react-helmet-async"
 import { useEffect, useState } from "react"
+import supereatslogo from "../../assets/mobile-logo.png"
 
 const CATEGORY_QUERY = gql`
     query categoryQuery($input: CategoryInput!) {
@@ -58,7 +59,7 @@ export const Category = () => {
             </HelmetProvider>
             <div className="bg-teal-950 w-full py-10 md:py-20 flex items-center justify-left px-4 md:px-10 mb-10">
                 <div className="flex items-center">
-                    <img className="w-16 h-16 rounded-full opacity-90" src={data?.category?.category?.coverImg ?? ""} alt={data?.category?.category?.name ?? ""} />
+                    <img className="w-16 h-16 rounded-full opacity-90" src={data?.category?.category?.coverImg || supereatslogo} alt={data?.category?.category?.name ?? ""} />
                     <h1 className="text-2xl font-xs text-gray-100">{data?.category?.category?.name}</h1>
                 </div>
             </div>

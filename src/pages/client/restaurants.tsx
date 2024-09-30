@@ -54,6 +54,25 @@ export const Restaurants = () => {
     })
     const onNextPageClick = () => setPage((current) => current + 1)
     const onPrevPageClick = () => setPage((current) => current - 1)
+    const renderPageNumbers = () => {
+        const totalPages = data?.restaurants.totalPages || 0
+        const pageNumbers = []
+        for (let i = 1; i <= totalPages; i++) {
+            pageNumbers.push(
+                <button
+                    key={i}
+                    onClick={() => setPage(i)}
+                    className={`mx-2 px-3 py-1 rounded focus:outline-none ${i === page
+                            ? 'font-bold text-teal-950'
+                            : 'font-normal text-gray-500 hover:text-teal-950'
+                        }`}
+                >
+                    {i}
+                </button>
+            )
+        }
+        return pageNumbers
+    }
     const { register, handleSubmit, getValues } = useForm<IFormProps>()
     const onSearchSubmit = () => {
         const { searchQuery } = getValues()
@@ -90,15 +109,7 @@ export const Restaurants = () => {
                         ))}
                     </div>
                     <div className="flex justify-center items-center mt-10">
-                        <span className="mx-1">
-                            {page} of {data?.restaurants.totalPages}
-                        </span>
-                        {page !== data?.restaurants.totalPages &&
-                            <button className="font-medium text-lg focus:outline-none" onClick={onNextPageClick}>&rarr;</button>
-                        }
-                        {page !== 1 &&
-                            <button className="font-medium text-lg focus:outline-none" onClick={onPrevPageClick}>&larr;</button>
-                        }
+                        {renderPageNumbers()}
                     </div>
                 </div>
             }

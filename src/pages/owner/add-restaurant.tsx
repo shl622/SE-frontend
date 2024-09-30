@@ -1,11 +1,11 @@
-import { gql, useMutation } from "@apollo/client";
-import { CreateRestaurantMutation, CreateRestaurantMutationVariables } from "../../__generated__/graphql";
+import { gql, useMutation, useQuery } from "@apollo/client";
+import { AllCategoriesQuery, AllCategoriesQueryVariables, CreateRestaurantMutation, CreateRestaurantMutationVariables } from "../../__generated__/graphql";
 import { useForm } from "react-hook-form";
 import { Button } from "../../components/button";
 import { Helmet, HelmetProvider } from "react-helmet-async";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faImage } from "@fortawesome/free-solid-svg-icons";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { FormError } from "../../components/form-error";
 
 const CREATE_RESTAURANT_MUTATION = gql`
@@ -17,44 +17,73 @@ const CREATE_RESTAURANT_MUTATION = gql`
     }
 `
 
+const ALL_CATEGORIES_QUERY = gql`
+    query allCategories {
+        allCategories {
+            ok
+            error
+            categories {
+                id
+                name
+            }
+        }
+    }
+`
+
 interface IFormProps {
     name: string
     file: FileList
     address: string
-    categoryName: string
+    categoryId: string
+    newCategory: string
 }
 
 export const AddRestaurant = () => {
-    const [createRestaurant, { data }] = useMutation<CreateRestaurantMutation, CreateRestaurantMutationVariables>(CREATE_RESTAURANT_MUTATION,{
+    const [createRestaurant, { data }] = useMutation<CreateRestaurantMutation, CreateRestaurantMutationVariables>(CREATE_RESTAURANT_MUTATION, {
         onCompleted: (data) => {
             const { ok, error } = data.createRestaurant
-            if (ok){
+            if (ok) {
                 setUploadingImage(false)
             }
         }
     })
-    const { register, handleSubmit, formState: { errors, isValid }, getValues, formState } = useForm<IFormProps>({
+    const { data: categoriesData } = useQuery<AllCategoriesQuery, AllCategoriesQueryVariables>(ALL_CATEGORIES_QUERY)
+    const [selectedCategory, setSelectedCategory] = useState("")
+    const { register, handleSubmit, formState: { errors, isValid }, getValues, formState, watch } = useForm<IFormProps>({
         mode: "onChange"
     })
     const [uploadingImage, setUploadingImage] = useState(false)
+    const [fileName, setFileName] = useState("")
+    const watchCategoryId = watch("categoryId");
+    const watchFile = watch("file")
+    useEffect(()=>{
+        if (watchFile && watchFile.length > 0) {
+            setFileName(watchFile[0].name)
+        }else{
+            setFileName("")
+        }
+    }, [watchFile])
     const onSubmit = async () => {
         try {
-            const { file, name, address, categoryName } = getValues()
+            const { file, name, address, newCategory, categoryId } = getValues()
             const readFile = file[0]
             const formBody = new FormData()
             formBody.append('file', readFile)
-            const {url:coverImg} = await (
+            const { url: coverImg } = await (
                 await fetch('http://localhost:4000/uploads/', {
                     method: 'POST',
                     body: formBody
                 })
             ).json()
+            const categoryName = categoryId === "other"
+                ? newCategory.charAt(0).toUpperCase() + newCategory.slice(1)
+                : categoriesData?.allCategories.categories?.find(cat => cat.id === parseInt(categoryId))?.name
             createRestaurant({
                 variables: {
                     input: {
                         name,
                         address,
-                        categoryName,
+                        categoryName: categoryName!,
                         coverImg,
                     }
                 }
@@ -80,17 +109,24 @@ export const AddRestaurant = () => {
             </span>
             <form className="bg-white shadow-md rounded-lg p-6 flex flex-col gap-3" onSubmit={handleSubmit(onSubmit)}>
                 <div className="relative">
-                    <input
-                        {...register("file", { required: "File is required" })}
-                        type="file"
-                        accept="image/*"
-                        id="image-upload"
-                        className="hidden"
-                    />
-                    <label htmlFor="image-upload" className="cursor-pointer flex items-center justify-center w-full h-12 bg-gray-100 rounded-md hover:bg-gray-200 transition-colors">
-                        <FontAwesomeIcon icon={faImage} className="text-gray-600 text-xl" />
-                        <span className="ml-2 text-gray-600">Upload Image</span>
-                    </label>
+                <input
+                    {...register("file", { required: "File is required" })}
+                    type="file"
+                    accept="image/*"
+                    id="image-upload"
+                    className="hidden"
+                />
+                <label 
+                    htmlFor="image-upload" 
+                    className={`cursor-pointer flex items-center justify-center w-full h-12 rounded-md transition-colors ${
+                        fileName ? 'bg-lime-600 text-white' : 'bg-gray-100 hover:bg-gray-200'
+                    }`}
+                >
+                    <FontAwesomeIcon icon={faImage} className={fileName ? 'text-white' : 'text-gray-600'} />
+                    <span className={`ml-2 ${fileName ? 'text-white' : 'text-gray-600'} truncate`}>
+                        {fileName || 'Upload Image'}
+                    </span>
+                </label>
                 </div>
                 <input {...register("name", { required: "Name is required" })}
                     className="input"
@@ -100,10 +136,26 @@ export const AddRestaurant = () => {
                     className="input"
                     type="text"
                     placeholder="Address" />
-                <input {...register("categoryName", { required: "Category Name is required" })}
+                <select
+                    {...register("categoryId", { required: "Category is required" })}
                     className="input"
-                    type="text"
-                    placeholder="Category Name" />
+                >
+                    <option value="">Select a category</option>
+                    {categoriesData?.allCategories.categories?.map((category) => (
+                        <option key={category.id} value={category.id}>
+                            {category.name}
+                        </option>
+                    ))}
+                    <option value="other">Other...</option>
+                </select>
+                {watchCategoryId === "other" && (
+                    <input
+                        {...register("newCategory", { required: "New category name is required" })}
+                        className="input"
+                        type="text"
+                        placeholder="New Category Name"
+                    />
+                )}
                 <Button loading={uploadingImage} canClick={formState.isValid} actionText="Add Restaurant" />
                 {data?.createRestaurant.error && <FormError errorMessage={data.createRestaurant.error} />}
             </form>
