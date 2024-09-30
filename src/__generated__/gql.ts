@@ -23,6 +23,8 @@ const documents = {
     "\n    mutation login($loginInput:LoginInput!){\n        login(input: $loginInput){\n            ok\n            error\n            token\n        }\n    }\n": types.LoginDocument,
     "\n    mutation createRestaurant($input: CreatesRestaurantInput!) {\n        createRestaurant(input: $input) {\n            ok\n            error\n            restaurantId\n        }\n    }\n": types.CreateRestaurantDocument,
     "\n    query allCategories {\n        allCategories {\n            ok\n            error\n            categories {\n                id\n                name\n            }\n        }\n    }\n": types.AllCategoriesDocument,
+    "\n    mutation EditRestaurant($input: EditRestaurantInput!) {\n        editRestaurant(input: $input) {\n            ok\n            error\n        }\n    }\n": types.EditRestaurantDocument,
+    "\n    mutation DeleteRestaurant($input: DeleteRestaurantInput!) {\n        deleteRestaurant(input: $input) {\n            ok\n            error\n        }\n    }\n": types.DeleteRestaurantDocument,
     "\n    query myRestaurant($input: MyRestaurantInput!) {\n        myRestaurant(input: $input) {\n            ok\n            error\n            restaurant {\n                id\n                name\n                address\n                createdAt\n                updatedAt\n                category {\n                    name\n                }\n                coverImg\n                address\n                isPromoted\n                promotedUntil\n            }\n        }\n    }\n": types.MyRestaurantDocument,
     "\n    query myRestaurants {\n        myRestaurants {\n            ok\n            error\n            myRestaurants{\n                id\n                name\n                coverImg\n                category{\n                    name\n                }\n                address\n                isPromoted  \n            }\n        }\n    }\n": types.MyRestaurantsDocument,
     "\n    mutation verifyEmail($input: VerifyEmailInput!) {\n        verifyEmail(input: $input) {\n            ok\n            error\n        }\n    }\n": types.VerifyEmailDocument,
@@ -85,6 +87,14 @@ export function graphql(source: "\n    mutation createRestaurant($input: Creates
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
 export function graphql(source: "\n    query allCategories {\n        allCategories {\n            ok\n            error\n            categories {\n                id\n                name\n            }\n        }\n    }\n"): (typeof documents)["\n    query allCategories {\n        allCategories {\n            ok\n            error\n            categories {\n                id\n                name\n            }\n        }\n    }\n"];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(source: "\n    mutation EditRestaurant($input: EditRestaurantInput!) {\n        editRestaurant(input: $input) {\n            ok\n            error\n        }\n    }\n"): (typeof documents)["\n    mutation EditRestaurant($input: EditRestaurantInput!) {\n        editRestaurant(input: $input) {\n            ok\n            error\n        }\n    }\n"];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(source: "\n    mutation DeleteRestaurant($input: DeleteRestaurantInput!) {\n        deleteRestaurant(input: $input) {\n            ok\n            error\n        }\n    }\n"): (typeof documents)["\n    mutation DeleteRestaurant($input: DeleteRestaurantInput!) {\n        deleteRestaurant(input: $input) {\n            ok\n            error\n        }\n    }\n"];
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
