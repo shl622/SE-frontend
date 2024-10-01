@@ -46,7 +46,6 @@ export const Restaurant= () => {
             setRestaurantName(data.restaurant.restaurant?.name!)
         }
     }, [data])
-    console.log(data)
     return (
         <div>
             <HelmetProvider>

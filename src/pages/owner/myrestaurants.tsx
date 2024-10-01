@@ -4,7 +4,7 @@ import { Helmet, HelmetProvider } from "react-helmet-async"
 import { Link } from "react-router-dom"
 import { Restaurant } from "../../components/restaurant"
 
-const MY_RESTAURANTS_QUERY = gql`
+export const MY_RESTAURANTS_QUERY = gql`
     query myRestaurants {
         myRestaurants {
             ok
@@ -25,7 +25,6 @@ const MY_RESTAURANTS_QUERY = gql`
 
 export const MyRestaurants = () => {
     const { data } = useQuery<MyRestaurantsQuery, MyRestaurantsQueryVariables>(MY_RESTAURANTS_QUERY)
-    console.log(data)
     return (
         <div>
             <HelmetProvider>
