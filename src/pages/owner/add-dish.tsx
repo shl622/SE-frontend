@@ -32,6 +32,8 @@ const CREATE_DISH_MUTATION = gql`
 export const AddDish = () => {
     const history = useHistory()
     const { restaurantId } = useParams<IAddDishParams>()
+    const [uploadingImage, setUploadingImage] = useState(false)
+    const [fileName, setFileName] = useState("")
     const [createDish, { loading }] = useMutation<CreateDishMutation, CreateDishMutationVariables>(CREATE_DISH_MUTATION, {
         refetchQueries: [{
             query: MY_RESTAURANTS_QUERY,
@@ -40,19 +42,44 @@ export const AddDish = () => {
                     id: +restaurantId
                 }
             }
-        }]
+        }],
+        onCompleted: (data) => {
+            const { ok, error } = data.createDish
+            if (ok) {
+                setUploadingImage(false)
+            }
+        }
     })
-    const { register, handleSubmit, formState: { errors, isValid }, getValues, formState } = useForm<IFormProps>({
+    const { register, handleSubmit, formState: { errors, isValid }, getValues, formState, watch } = useForm<IFormProps>({
         mode: "onChange"
     })
+    const watchFile = watch("file")
+    useEffect(()=>{
+        if (watchFile && watchFile.length > 0) {
+            setFileName(watchFile[0].name)
+        }else{
+            setFileName("")
+        }
+    }, [watchFile])
     const onSubmit = async () => {
         try {
-            const { name, price, description } = getValues()
+            setUploadingImage(true)
+            const { name, price, description, file } = getValues()
+            const readFile = file[0]
+            const formBody = new FormData()
+            formBody.append('file', readFile)
+            const { url: photo } = await (
+                await fetch('http://localhost:4000/uploads/', {
+                    method: 'POST',
+                    body: formBody
+                })
+            ).json()
             const result = await createDish({
                 variables: {
                     input: {
                         name,
                         price: +price,
+                        photo,
                         description,
                         restaurantId: +restaurantId
                     }
@@ -85,6 +112,25 @@ export const AddDish = () => {
                     className="input"
                     type="text"
                     placeholder="Menu Name" />
+                 <div className="relative">
+                    <input
+                        {...register("file", { required: "File is required" })}
+                        type="file"
+                        accept="image/*"
+                        id="image-upload"
+                        className="hidden"
+                    />
+                    <label
+                        htmlFor="image-upload"
+                        className={`cursor-pointer flex items-center justify-center w-full h-12 rounded-md transition-colors ${fileName ? 'bg-lime-600 text-white' : 'bg-gray-100 hover:bg-gray-200'
+                            }`}
+                    >
+                        <FontAwesomeIcon icon={faImage} className={fileName ? 'text-white' : 'text-gray-600'} />
+                        <span className={`ml-2 ${fileName ? 'text-white' : 'text-gray-600'} truncate`}>
+                            {fileName || 'Upload Image'}
+                        </span>
+                    </label>
+                </div>
                 <input {...register("price", { required: "Price is required" })}
                     className="input"
                     type="number"
