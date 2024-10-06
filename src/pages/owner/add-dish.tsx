@@ -2,10 +2,10 @@ import { gql, useMutation } from "@apollo/client"
 import { useHistory, useParams } from "react-router-dom"
 import { CreateDishMutation, CreateDishMutationVariables } from "../../__generated__/graphql"
 import { Helmet, HelmetProvider } from "react-helmet-async"
-import { useForm } from "react-hook-form"
+import { Control, useFieldArray, useForm, UseFormRegister } from "react-hook-form"
 import { useEffect, useState } from "react"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
-import { faImage } from "@fortawesome/free-solid-svg-icons"
+import { faImage, faX, faPlus } from "@fortawesome/free-solid-svg-icons"
 import { Button } from "../../components/button"
 import { MY_RESTAURANT_QUERY } from "./my-restaurant"
 
@@ -18,6 +18,11 @@ interface IFormProps {
     name: string
     price: number
     description: string
+    options: {
+        name: string,
+        choices: { name: string, extra: number }[],
+        extra: number
+    }[]
 }
 
 const CREATE_DISH_MUTATION = gql`
@@ -33,6 +38,7 @@ export const AddDish = () => {
     const history = useHistory()
     const { restaurantId } = useParams<IAddDishParams>()
     const [uploadingImage, setUploadingImage] = useState(false)
+    const [optionCount, setOptionCount] = useState(0)
     const [fileName, setFileName] = useState("")
     const [createDish, { loading }] = useMutation<CreateDishMutation, CreateDishMutationVariables>(CREATE_DISH_MUTATION, {
         onCompleted: (data) => {
@@ -50,21 +56,41 @@ export const AddDish = () => {
             }
         }]
     })
-    const { register, handleSubmit, formState: { errors, isValid }, getValues, formState, watch } = useForm<IFormProps>({
-        mode: "onChange"
+    const { register, handleSubmit, formState: { errors, isValid }, getValues, formState, watch, control } = useForm<IFormProps>({
+        mode: "onChange",
+        defaultValues: {
+            options: []
+        }
+    })
+    const { fields, append, remove } = useFieldArray({
+        control,
+        name: "options"
     })
     const watchFile = watch("file")
-    useEffect(()=>{
+    useEffect(() => {
         if (watchFile && watchFile.length > 0) {
             setFileName(watchFile[0].name)
-        }else{
+        } else {
             setFileName("")
         }
     }, [watchFile])
+
+    // const onAddClick = () => {
+    //     setOptionCount((current) => current + 1)
+    // }
+
+    // const onDeleteClick = (index: number) => {
+    //     setOptionCount((current) => current - 1)
+    //     // @ts-ignore
+    //     setValue(`${index}.optionName`, "")
+    //     // @ts-ignore
+    //     setValue(`${index}.optionPrice`, "")
+    // }
+
     const onSubmit = async () => {
         try {
             setUploadingImage(true)
-            const { name, price, description, file } = getValues()
+            const { name, price, description, file, options } = getValues()
             const readFile = file[0]
             const formBody = new FormData()
             formBody.append('file', readFile)
@@ -81,7 +107,15 @@ export const AddDish = () => {
                         price: +price,
                         photo,
                         description,
-                        restaurantId: +restaurantId
+                        restaurantId: +restaurantId,
+                        options: options.map(option => ({
+                            name: option.name,
+                            extra: +option.extra,
+                            choices: option.choices.map(choice => ({
+                                name: choice.name,
+                                extra: +choice.extra
+                            }))
+                        }))
                     }
                 }
             })
@@ -139,8 +173,96 @@ export const AddDish = () => {
                 <textarea {...register("description", { required: "Description is required" })}
                     className="input resize-y min-h-[250px] h-64 md:h-80 lg:h-96"
                     placeholder="Description" />
+                <div className="mt-4">
+                    <button
+                        type="button"
+                        onClick={() => append({ name: "", choices: [], extra: 0 })}
+                        className="flex items-center text-lime-600 hover:text-lime-700 transition-colors mb-2"
+                    >
+                        <FontAwesomeIcon icon={faPlus} className="mr-2" />
+                        Add Option
+                    </button>
+                    {fields.map((field, index) => (
+                        <div key={field.id} className="mb-4 p-4 border border-gray-200 rounded-md">
+                            <div className="flex items-center space-x-2 mb-2">
+                                <input
+                                    {...register(`options.${index}.name` as const, { required: "Option Name is required" })}
+                                    className="input flex-grow"
+                                    placeholder="Option Name"
+                                />
+                                <input
+                                    {...register(`options.${index}.extra` as const, { required: "Extra Price is required", valueAsNumber: true })}
+                                    className="input w-24"
+                                    type="number"
+                                    placeholder="Extra Price"
+                                />
+                                <button
+                                    type="button"
+                                    onClick={() => remove(index)}
+                                    className="text-gray-600 hover:text-red-600 transition-colors"
+                                >
+                                    <FontAwesomeIcon icon={faX} />
+                                </button>
+                            </div>
+                            <div className="ml-4">
+                                <h4 className="font-semibold mb-2">Choices:</h4>
+                                <ChoicesFieldArray nestIndex={index} {...{ control, register }} />
+                            </div>
+                        </div>
+                    ))}
+                </div>
                 <Button loading={loading} canClick={formState.isValid} actionText="Create Menu Item" />
             </form>
+        </div>
+    )
+}
+
+interface ChoicesFieldArrayProps {
+    nestIndex: number
+    control: Control<IFormProps>
+    register: UseFormRegister<IFormProps>
+}
+
+const ChoicesFieldArray = ({ nestIndex, control, register }: ChoicesFieldArrayProps) => {
+    const { fields, remove, append } = useFieldArray({
+        control,
+        name: `options.${nestIndex}.choices` as const
+    })
+
+    return (
+        <div>
+            {fields.map((item, k) => {
+                return (
+                    <div key={item.id} className="flex items-center space-x-2 mb-2">
+                        <input
+                            {...register(`options.${nestIndex}.choices.${k}.name` as const, {
+                                required: true
+                            })}
+                            className="input flex-grow"
+                            placeholder="Choice name"
+                        />
+                        <input
+                            {...register(`options.${nestIndex}.choices.${k}.extra` as const, {
+                                valueAsNumber: true,
+                                required: true
+                            })}
+                            className="input w-24"
+                            type="number"
+                            placeholder="Price"
+                        />
+                        <button type="button" onClick={() => remove(k)} className="text-gray-600 hover:text-red-600 transition-colors">
+                            <FontAwesomeIcon icon={faX} />
+                        </button>
+                    </div>
+                );
+            })}
+            <button
+                type="button"
+                onClick={() => append({ name: "", extra: 0 })}
+                className="text-sm text-lime-600 hover:text-lime-700 transition-colors"
+            >
+                Add Choice
+            </button>
         </div>
     )
 }
