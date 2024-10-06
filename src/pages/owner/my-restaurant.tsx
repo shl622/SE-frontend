@@ -5,6 +5,7 @@ import { Helmet, HelmetProvider } from "react-helmet-async"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 import { faCircleInfo, faPencilAlt, faXmark } from "@fortawesome/free-solid-svg-icons"
 import { useEffect, useState } from "react"
+import { Dish } from "../../components/dish"
 
 interface IParams {
     restaurantId: string
@@ -29,6 +30,7 @@ export const MY_RESTAURANT_QUERY = gql`
                     name
                     price
                     description
+                    photo
                     options{
                         name
                         extra
@@ -136,15 +138,17 @@ export const MyRestaurant = () => {
             <div>
                 {data?.myRestaurant.restaurant?.menu?.length === 0 ? (
                     <h4 className="text-2xl font-medium text-center mt-10">Please upload menu items</h4>
-                ) : <div className="flex flex-col items-center">
-                    <h1 className="text-2xl font-medium text-center mt-10">Menu</h1>
-                    <div className="flex flex-col items-center">
-                        <ul>
-                            {data?.myRestaurant.restaurant?.menu?.map(menu => (
-                                <li key={menu.id}>{menu.name}</li>
-                            ))}
-                        </ul>
-                    </div>
+                ) : 
+                <div className="px-5 md:px-10 lg:px-20 xl:px-20 mt-16 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                    {data?.myRestaurant.restaurant?.menu?.map((dish:any)=>(
+                        <Dish 
+                        key={dish.id} 
+                        name={dish.name} 
+                        price={dish.price} 
+                        description={dish.description} 
+                        photo={dish.photo} 
+                        options={dish.options || []} />
+                    ))}
                 </div>}
             </div>
         </div>
