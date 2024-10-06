@@ -7,7 +7,7 @@ import { useEffect, useState } from "react"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 import { faImage } from "@fortawesome/free-solid-svg-icons"
 import { Button } from "../../components/button"
-import { MY_RESTAURANTS_QUERY } from "./myrestaurants"
+import { MY_RESTAURANT_QUERY } from "./my-restaurant"
 
 interface IAddDishParams {
     restaurantId: string
@@ -35,20 +35,20 @@ export const AddDish = () => {
     const [uploadingImage, setUploadingImage] = useState(false)
     const [fileName, setFileName] = useState("")
     const [createDish, { loading }] = useMutation<CreateDishMutation, CreateDishMutationVariables>(CREATE_DISH_MUTATION, {
-        refetchQueries: [{
-            query: MY_RESTAURANTS_QUERY,
-            variables: {
-                input: {
-                    id: +restaurantId
-                }
-            }
-        }],
         onCompleted: (data) => {
             const { ok, error } = data.createDish
             if (ok) {
                 setUploadingImage(false)
             }
-        }
+        },
+        refetchQueries: [{
+            query: MY_RESTAURANT_QUERY,
+            variables: {
+                input: {
+                    id: +restaurantId
+                }
+            }
+        }]
     })
     const { register, handleSubmit, formState: { errors, isValid }, getValues, formState, watch } = useForm<IFormProps>({
         mode: "onChange"
@@ -112,7 +112,7 @@ export const AddDish = () => {
                     className="input"
                     type="text"
                     placeholder="Menu Name" />
-                 <div className="relative">
+                <div className="relative">
                     <input
                         {...register("file", { required: "File is required" })}
                         type="file"
@@ -134,6 +134,7 @@ export const AddDish = () => {
                 <input {...register("price", { required: "Price is required" })}
                     className="input"
                     type="number"
+                    min={0}
                     placeholder="Price" />
                 <textarea {...register("description", { required: "Description is required" })}
                     className="input resize-y min-h-[250px] h-64 md:h-80 lg:h-96"
