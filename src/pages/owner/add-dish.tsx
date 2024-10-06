@@ -75,18 +75,6 @@ export const AddDish = () => {
         }
     }, [watchFile])
 
-    // const onAddClick = () => {
-    //     setOptionCount((current) => current + 1)
-    // }
-
-    // const onDeleteClick = (index: number) => {
-    //     setOptionCount((current) => current - 1)
-    //     // @ts-ignore
-    //     setValue(`${index}.optionName`, "")
-    //     // @ts-ignore
-    //     setValue(`${index}.optionPrice`, "")
-    // }
-
     const onSubmit = async () => {
         try {
             setUploadingImage(true)
