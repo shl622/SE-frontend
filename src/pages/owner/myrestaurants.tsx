@@ -1,11 +1,11 @@
 import { gql, useQuery } from "@apollo/client"
-import { MyRestaurantsQuery, MyRestaurantsQueryVariables } from "../../__generated__/graphql"
 import { Helmet, HelmetProvider } from "react-helmet-async"
 import { Link } from "react-router-dom"
-import { Restaurant } from "../../components/restaurant"
-import { VictoryChart } from "victory-chart"
 import { VictoryAxis, VictoryLabel, VictoryLine, VictoryPie, VictoryTheme, VictoryTooltip, VictoryVoronoiContainer } from "victory"
-import { aggregateSales } from "./my-restaurant"
+import { VictoryChart } from "victory-chart"
+import { MyRestaurantsQuery, MyRestaurantsQueryVariables } from "../../__generated__/graphql"
+import { Restaurant } from "../../components/restaurant"
+import { OrderStatus } from "../../constants"
 
 export const MY_RESTAURANTS_QUERY = gql`
     query myRestaurants {
@@ -24,6 +24,9 @@ export const MY_RESTAURANTS_QUERY = gql`
                     createdAt
                     total
                     status
+                    restaurant{
+                        name
+                    }
                 }
                 address
                 isPromoted  
@@ -90,6 +93,28 @@ export const MyRestaurants = () => {
         y: data.totalOrders
     }))
 
+    const getOrderStatusDisplay = (status: OrderStatus): string => {
+        switch (status) {
+            case OrderStatus.InProgress:
+                return 'In Progress'
+            case OrderStatus.WaitingForPickUp:
+                return 'Waiting for Delivery Pickup'
+            case OrderStatus.PickedUp:
+                return 'Picked Up'
+            case OrderStatus.Pending:
+                return 'Pending'
+            default:
+                return status
+        }
+    }
+
+    const calculateTimePassed = (createdAt: string) => {
+        const orderDate = new Date(createdAt)
+        const currentDate = new Date()
+        const diffInMinutes = Math.floor((currentDate.getTime() - orderDate.getTime()) / (1000 * 60))
+        return diffInMinutes
+    }
+
     return (
         <div>
             <HelmetProvider>
@@ -122,7 +147,7 @@ export const MyRestaurants = () => {
 
                 <div className="bg-white p-4 rounded-lg shadow flex flex-col gap-2 2xl:flex-row">
                     <div className="bg-white p-4 rounded-lg shadow">
-                        <h2 className="text-xl font-semibold mb-4">Restaurant Orders% </h2>
+                        <h2 className="text-xl font-semibold mb-4">Restaurant Orders </h2>
                         <VictoryPie
                             data={pieChartData}
                             colorScale="qualitative"
@@ -171,9 +196,16 @@ export const MyRestaurants = () => {
                                 {restaurant.orders
                                     .filter((order: any) => order.status !== 'Delivered')
                                     .map((order: any) => (
-                                        <li key={order.id} className="text-sm">
-                                            Order #{order.id}: {order.status === 'Inprogress' ? 'Cooking' : order.status}
-                                        </li>
+                                        <div className="px-8 py-4 border cursor-pointer hover:border-gray-800 transition-all flex flex-col" key={order.id}>
+                                            <h3 className="text-lg font-bold">{order.restaurant.name}</h3>
+                                            <span className="font-medium mb-5">
+                                                {calculateTimePassed(order.createdAt)} minutes ago
+                                            </span>
+                                            <span className="font-medium">
+                                                {getOrderStatusDisplay(order.status as OrderStatus)}
+                                            </span>
+                                            <span className="font-light">${order.total.toFixed(2)}</span>
+                                        </div>
                                     ))}
                             </ul>
                         </div>
@@ -181,7 +213,25 @@ export const MyRestaurants = () => {
                 </div>
                 <div className="bg-white p-4 rounded-lg shadow">
                     <h2 className="text-xl font-semibold mb-4">Archived Orders</h2>
-                    {/* Add archived orders content here */}
+                    {data?.myRestaurants.myRestaurants?.map((restaurant: any) => (
+                        <div key={restaurant.id}>
+                            <ul>
+                                {restaurant.orders
+                                    .filter((order: any) => order.status === 'Delivered')
+                                    .sort((a: any, b: any) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
+                                    .map((order: any) => (
+                                        <div className="px-8 py-4 border cursor-pointer hover:border-gray-800 transition-all flex flex-col" key={order.id}>
+                                            <h3 className="text-lg font-medium">{order.restaurant.name}</h3>
+                                            <span className="font-medium mb-5">
+                                                {order.createdAt.split('T')[0]}
+                                            </span>
+                                            <span className="font-medium">{order.status}</span>
+                                            <span className="font-light">${order.total.toFixed(2)}</span>
+                                        </div>
+                                    ))}
+                            </ul>
+                        </div>
+                    ))}
                 </div>
             </div>
         </div>
