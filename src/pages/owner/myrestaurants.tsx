@@ -165,9 +165,20 @@ export const MyRestaurants = () => {
                 </div>
                 <div className="bg-white p-4 rounded-lg shadow">
                     <h2 className="text-xl font-semibold mb-4">Current Orders</h2>
-                    <h1>Current Orders</h1>
+                    {data?.myRestaurants.myRestaurants?.map((restaurant: any) => (
+                        <div key={restaurant.id}>
+                            <ul>
+                                {restaurant.orders
+                                    .filter((order: any) => order.status !== 'Delivered')
+                                    .map((order: any) => (
+                                        <li key={order.id} className="text-sm">
+                                            Order #{order.id}: {order.status === 'Inprogress' ? 'Cooking' : order.status}
+                                        </li>
+                                    ))}
+                            </ul>
+                        </div>
+                    ))}
                 </div>
-
                 <div className="bg-white p-4 rounded-lg shadow">
                     <h2 className="text-xl font-semibold mb-4">Archived Orders</h2>
                     {/* Add archived orders content here */}
