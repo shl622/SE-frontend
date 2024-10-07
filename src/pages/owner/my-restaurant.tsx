@@ -6,6 +6,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 import { faCircleInfo, faPencilAlt, faXmark } from "@fortawesome/free-solid-svg-icons"
 import { useEffect, useState } from "react"
 import { Dish } from "../../components/dish"
+import { VictoryBar, VictoryChart, VictoryAxis, VictoryPie, VictoryVoronoiContainer, VictoryLine, VictoryTheme } from 'victory';
 
 interface IParams {
     restaurantId: string
@@ -44,6 +45,12 @@ export const MY_RESTAURANT_QUERY = gql`
                 address
                 isPromoted
                 promotedUntil
+                orders{
+                    id
+                    total
+                    status
+                    createdAt
+                }
             }
         }
     }
@@ -57,6 +64,17 @@ export const MyRestaurant = () => {
             }
         }
     })
+    const aggregateSales = (orders:any[])=>{
+        const dailySales = orders.reduce((acc,order)=> {
+            const date = new Date(order.createdAt).toLocaleDateString("us")
+            acc[date] = (acc[date] || 0) + order.total
+            return acc
+        },{})
+        return Object.entries(dailySales).map(([date,sales])=>({
+            x: new Date(date),
+            y: sales
+        }))
+    }
     const [isModalOpen, setIsModalOpen] = useState(false)
     const [restaurantName, setRestaurantName] = useState("")
     useEffect(() => {
@@ -153,6 +171,26 @@ export const MyRestaurant = () => {
                     ))}
                 </div>}
             </div>
+            {data?.myRestaurant.restaurant?.orders && data.myRestaurant.restaurant.orders.length > 0 && (
+                <div className="px-5 md:px-10 lg:px-20 xl:px-20 mt-10">
+                    <h4 className="text-center text-lg ">Daily Revenue Generated (Last 30 days)</h4>
+                    <div className="max-1-xl mt-5">
+                        <VictoryChart 
+                        theme={VictoryTheme.material}
+                        height={500}
+                        domainPadding={50}
+                        width={window.innerWidth}
+                        containerComponent={<VictoryVoronoiContainer/>}>
+                            <VictoryLine
+                            data={aggregateSales(data.myRestaurant.restaurant.orders)}
+                            style={{data: { stroke: "#c43a31" }}}
+                            />
+                            <VictoryAxis style={{tickLabels: {fontSize: 12}}} dependentAxis tickFormat={(t)=> `$${t}`}/>
+                            <VictoryAxis style={{tickLabels: {fontSize: 12}}} tickFormat={tick=> new Date(tick).toLocaleDateString("us")}/>
+                        </VictoryChart>
+                    </div>
+                </div>
+            )}
         </div>
 
     )

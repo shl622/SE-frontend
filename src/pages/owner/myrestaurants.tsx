@@ -16,6 +16,11 @@ export const MY_RESTAURANTS_QUERY = gql`
                 category{
                     name
                 }
+                orders{
+                    id
+                    createdAt
+                    total
+                }
                 address
                 isPromoted  
             }
@@ -25,6 +30,7 @@ export const MY_RESTAURANTS_QUERY = gql`
 
 export const MyRestaurants = () => {
     const { data } = useQuery<MyRestaurantsQuery, MyRestaurantsQueryVariables>(MY_RESTAURANTS_QUERY)
+    console.log(data)
     return (
         <div>
             <HelmetProvider>
