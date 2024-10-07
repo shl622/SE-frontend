@@ -55,6 +55,19 @@ export const MY_RESTAURANT_QUERY = gql`
         }
     }
 `
+
+export const aggregateSales = (orders:any[])=>{
+    const dailySales = orders.reduce((acc,order)=> {
+        const date = new Date(order.createdAt).toLocaleDateString("us")
+        acc[date] = (acc[date] || 0) + order.total
+        return acc
+    },{})
+    return Object.entries(dailySales).map(([date,sales])=>({
+        x: new Date(date),
+        y: sales
+    }))
+}
+
 export const MyRestaurant = () => {
     const { restaurantId } = useParams<IParams>()
     const { data } = useQuery<MyRestaurantQuery, MyRestaurantQueryVariables>(MY_RESTAURANT_QUERY, {
@@ -64,17 +77,6 @@ export const MyRestaurant = () => {
             }
         }
     })
-    const aggregateSales = (orders:any[])=>{
-        const dailySales = orders.reduce((acc,order)=> {
-            const date = new Date(order.createdAt).toLocaleDateString("us")
-            acc[date] = (acc[date] || 0) + order.total
-            return acc
-        },{})
-        return Object.entries(dailySales).map(([date,sales])=>({
-            x: new Date(date),
-            y: sales
-        }))
-    }
     const [isModalOpen, setIsModalOpen] = useState(false)
     const [restaurantName, setRestaurantName] = useState("")
     useEffect(() => {
