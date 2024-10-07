@@ -143,11 +143,13 @@ export const MyRestaurant = () => {
                     {data?.myRestaurant.restaurant?.menu?.map((dish:any)=>(
                         <Dish 
                         key={dish.id} 
+                        id={dish.id}
                         name={dish.name} 
                         price={dish.price} 
                         description={dish.description} 
                         photo={dish.photo} 
-                        options={dish.options || []} />
+                        options={dish.options || []} 
+                        restaurantId={data?.myRestaurant.restaurant?.id!} />
                     ))}
                 </div>}
             </div>

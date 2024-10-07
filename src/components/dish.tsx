@@ -1,9 +1,11 @@
 import { faXmark } from "@fortawesome/free-solid-svg-icons"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 import { useEffect, useState } from "react"
+import { Link } from "react-router-dom"
 
 
 interface IDishProps {
+    id: number
     name: string
     price: number
     description: string
@@ -13,8 +15,9 @@ interface IDishProps {
         choices: { name: string, extra: number }[],
         extra: number
     }[]
+    restaurantId: number
 }
-export const Dish: React.FC<IDishProps> = ({ name, price, description, photo, options }) => {
+export const Dish: React.FC<IDishProps> = ({ id, name, price, description, photo, options, restaurantId }) => {
     const [isModalOpen, setIsModalOpen] = useState(false)
     useEffect(() => {
         if (isModalOpen) {
@@ -37,7 +40,10 @@ export const Dish: React.FC<IDishProps> = ({ name, price, description, photo, op
             {isModalOpen && (
                 <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
                     <div className="bg-white p-5 rounded-lg max-w-lg w-11/12 max-h-[90vh] overflow-auto">
-                        <div className="flex justify-end mb-2">
+                        <div className="flex justify-between mb-5">
+                            <Link to={`/restaurant/${restaurantId}/edit-dish/${id}`} className="text-sm bg-green-600 text-white py-1 px-3 rounded hover:bg-green-700 transition">
+                                Edit
+                            </Link>
                             <button
                                 className="text-gray-500 hover:text-gray-700 transition"
                                 onClick={() => setIsModalOpen(false)}

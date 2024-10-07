@@ -1,71 +1,96 @@
-import { gql, useMutation } from "@apollo/client"
-import { useHistory, useParams } from "react-router-dom"
-import { CreateDishMutation, CreateDishMutationVariables } from "../../__generated__/graphql"
+import { gql, useMutation, useQuery } from "@apollo/client"
 import { Helmet, HelmetProvider } from "react-helmet-async"
-import { Control, useFieldArray, useForm, UseFormRegister } from "react-hook-form"
+import { useHistory, useParams } from "react-router-dom"
+import { EditDishMutation, EditDishMutationVariables, GetDishQuery, GetDishQueryVariables } from "../../__generated__/graphql"
 import { useEffect, useState } from "react"
+import { Control, useFieldArray, useForm, UseFormRegister } from "react-hook-form"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
-import { faImage, faX, faPlus } from "@fortawesome/free-solid-svg-icons"
+import { faImage, faPlus, faX } from "@fortawesome/free-solid-svg-icons"
 import { Button } from "../../components/button"
-import { MY_RESTAURANT_QUERY } from "./my-restaurant"
 
-interface IAddDishParams {
+interface IEditDishParams {
+    dishId: string
     restaurantId: string
 }
 
 interface IFormProps {
-    file: FileList
     name: string
     price: number
     description: string
+    photo: FileList
     options: {
-        name: string,
-        choices: { name: string, extra: number }[],
+        name: string
+        choices: { name: string, extra: number }[]
         extra: number
     }[]
 }
 
-const CREATE_DISH_MUTATION = gql`
-    mutation createDish($input: CreateDishInput!) {
-        createDish(input: $input) {
+const EDIT_DISH_MUTATION = gql`
+    mutation editDish($input: EditDishInput!) {
+        editDish(input: $input) {
             ok
             error
         }
     }
 `
 
-export const AddDish = () => {
-    const history = useHistory()
-    const { restaurantId } = useParams<IAddDishParams>()
-    const [uploadingImage, setUploadingImage] = useState(false)
-    const [fileName, setFileName] = useState("")
-    const [createDish, { loading }] = useMutation<CreateDishMutation, CreateDishMutationVariables>(CREATE_DISH_MUTATION, {
-        onCompleted: (data) => {
-            const { ok, error } = data.createDish
-            if (ok) {
-                setUploadingImage(false)
-            }
-        },
-        refetchQueries: [{
-            query: MY_RESTAURANT_QUERY,
-            variables: {
-                input: {
-                    id: +restaurantId
+const GET_DISH_QUERY = gql`
+    query getDish($input: GetDishInput!) {
+        getDish(input: $input) {
+            ok
+            error
+            dish {
+                name
+                price
+                description
+                photo
+                options {
+                    name
+                    extra
+                    choices {
+                        name
+                        extra
+                    }
                 }
             }
-        }]
+        }
+    }
+`
+
+export const EditDish = () => {
+    const history = useHistory()
+    const [uploadingImage, setUploadingImage] = useState(false)
+    const { restaurantId, dishId } = useParams<IEditDishParams>()
+    const [editDish, { loading }] = useMutation<EditDishMutation, EditDishMutationVariables>(EDIT_DISH_MUTATION)
+    const [fileName, setFileName] = useState("")
+    const { data } = useQuery<GetDishQuery, GetDishQueryVariables>(GET_DISH_QUERY, {
+        variables: {
+            input: {
+                id: +dishId
+            }
+        }
     })
-    const { register, handleSubmit, formState: { errors, isValid }, getValues, formState, watch, control } = useForm<IFormProps>({
+    const { register, handleSubmit, formState: { errors, isValid }, getValues, watch, control } = useForm<IFormProps>({
         mode: "onChange",
         defaultValues: {
-            options: []
+            name: data?.getDish.dish?.name ?? '',
+            price: data?.getDish.dish?.price ?? 0,
+            description: data?.getDish.dish?.description ?? '',
+            options: data?.getDish.dish?.options?.map(option => ({
+                name: option?.name ?? '',
+                extra: option?.extra ?? 0,
+                choices: option?.choices?.map(choice => ({
+                    name: choice?.name ?? '',
+                    extra: choice?.extra ?? 0
+                })) ?? []
+            })) ?? []
         }
     })
     const { fields, append, remove } = useFieldArray({
         control,
         name: "options"
     })
-    const watchFile = watch("file")
+    const watchFile = watch("photo")
     useEffect(() => {
         if (watchFile && watchFile.length > 0) {
             setFileName(watchFile[0].name)
@@ -77,24 +102,24 @@ export const AddDish = () => {
     const onSubmit = async () => {
         try {
             setUploadingImage(true)
-            const { name, price, description, file, options } = getValues()
-            const readFile = file[0]
+            const { name, price, description, photo, options } = getValues()
+            const readFile = photo[0]
             const formBody = new FormData()
             formBody.append('file', readFile)
-            const { url: photo } = await (
+            const { url: photoUrl } = await (
                 await fetch('http://localhost:4000/uploads/', {
                     method: 'POST',
                     body: formBody
                 })
             ).json()
-            const result = await createDish({
+            const result = await editDish({
                 variables: {
                     input: {
+                        dishId: +dishId,
                         name,
                         price: +price,
-                        photo,
+                        photo: photoUrl,
                         description,
-                        restaurantId: +restaurantId,
                         options: options.map(option => ({
                             name: option.name,
                             extra: +option.extra,
@@ -106,25 +131,25 @@ export const AddDish = () => {
                     }
                 }
             })
-            if (result.data?.createDish.ok) {
+            if(result.data?.editDish.ok){
                 history.goBack()
             }
-        } catch (error) {
+        }catch(error){
             console.log(error)
         }
     }
     return (
-        <div className="max-w-screen-sm mx-auto mt-10 px-4">
+        <div className="max-w-screen-sm mx-auto mt-10 px-4 pb-20">
             <HelmetProvider>
                 <Helmet>
-                    <title> Add Menu Item | Super Eats</title>
+                    <title>Edit Menu Item | Super Eats</title>
                 </Helmet>
             </HelmetProvider>
-            <h1 className="text-4xl font-bold mb-4">Add Menu Item</h1>
+            <h1 className="text-4xl font-bold mb-4">Edit Menu Item</h1>
             <span className="block text-gray-600 mb-6">
-                Please fill out the form below to add a menu item.
+                Please fill out the form below to edit your menu item.
                 <br />
-                The menu item will be visible to the users once you submit the form.
+                The edited menu item will be visible to the users once you submit the form.
                 <br />
                 Thank you for choosing Super Eats!
             </span>
@@ -135,7 +160,7 @@ export const AddDish = () => {
                     placeholder="Menu Name" />
                 <div className="relative">
                     <input
-                        {...register("file", { required: "File is required" })}
+                        {...register("photo", { required: "File is required" })}
                         type="file"
                         accept="image/*"
                         id="image-upload"
@@ -160,7 +185,7 @@ export const AddDish = () => {
                 <textarea {...register("description", { required: "Description is required" })}
                     className="input resize-y min-h-[250px] h-64 md:h-80 lg:h-96"
                     placeholder="Description" />
-                <div className="mt-4">
+                <div className="mt-4 overflow-visible">
                     <button
                         type="button"
                         onClick={() => append({ name: "", choices: [], extra: 0 })}
@@ -198,7 +223,7 @@ export const AddDish = () => {
                         </div>
                     ))}
                 </div>
-                <Button loading={loading} canClick={formState.isValid} actionText="Create Menu Item" />
+                <Button loading={loading} canClick={isValid} actionText="Edit Menu Item" />
             </form>
         </div>
     )
