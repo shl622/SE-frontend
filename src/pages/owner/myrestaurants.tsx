@@ -195,6 +195,7 @@ export const MyRestaurants = () => {
                             <ul>
                                 {restaurant.orders
                                     .filter((order: any) => order.status !== 'Delivered')
+                                    .sort((a: any, b: any) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
                                     .map((order: any) => (
                                         <div className="px-8 py-4 border cursor-pointer hover:border-gray-800 transition-all flex flex-col" key={order.id}>
                                             <h3 className="text-lg font-bold">{order.restaurant.name}</h3>
