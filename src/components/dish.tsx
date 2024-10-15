@@ -4,7 +4,7 @@ import { useEffect, useState } from "react"
 import { Link } from "react-router-dom"
 
 
-interface IDishProps {
+export interface IDishProps {
     id: number
     name: string
     price: number
