@@ -7,6 +7,7 @@ import { EMAIL_REGEX } from "../../constants"
 import { useCurrAuth } from "../../hooks/useCurrAuth"
 import { authToken, isLoggedInVar } from "../../apollo"
 import { useHistory } from "react-router-dom"
+import { useCart } from "../../context/cart-context"
 
 const EDIT_PROFILE_MUTATION = gql`
     mutation editProfile($input: EditProfileInput!) {
@@ -23,6 +24,7 @@ interface IFormProps {
 }
 
 export const EditProfile = () => {
+    const { clearCart } = useCart()
     const { data: userData } = useCurrAuth()
     const client = useApolloClient()
     const history = useHistory()
@@ -73,6 +75,7 @@ export const EditProfile = () => {
         await client.clearStore()
         isLoggedInVar(false)
         authToken(null)
+        clearCart()
         history.replace("/")
     }
     return (

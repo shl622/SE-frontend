@@ -1,12 +1,15 @@
-import React from "react";
+import React, { useContext } from "react";
 import eatsLogo from "../assets/mobile-logo.png";
 import { useCurrAuth } from "../hooks/useCurrAuth";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faUser } from "@fortawesome/free-solid-svg-icons";
+import { faShoppingCart, faUser } from "@fortawesome/free-solid-svg-icons";
 import { Link } from "react-router-dom";
+import { useCart } from "../context/cart-context";
 
 export const Header: React.FC = () => {
     const { data } = useCurrAuth()
+    const { cartItems } = useCart()
+
     return (
         <>
             {!data?.currAuth.verified &&
@@ -21,12 +24,20 @@ export const Header: React.FC = () => {
                             <h1 className="text-2xl font-semibold bg-gradient-to-r from-lime-600 to-green-400 text-transparent bg-clip-text">Super Eats</h1>
                         </div>
                     </Link>
-                    <span className="text-xs flex items-center gap-2">
-                        <Link to="/edit-profile">
-                            <FontAwesomeIcon icon={faUser} />
+                    <div className="flex gap-6 text-md">
+                        <Link to="/cart" className="gap-4">
+                            <FontAwesomeIcon icon={faShoppingCart} />
+                            <span className={`ml-1 ${cartItems.length > 0 ? "text-lime-600" : ""}`}>
+                                {cartItems.length || '0'}
+                            </span>
                         </Link>
-                        <span className="text-sm">{data?.currAuth?.email}</span>
-                    </span>
+                        <span className="text-md flex items-center gap-2">
+                            <Link to="/edit-profile">
+                                <FontAwesomeIcon icon={faUser} />
+                            </Link>
+                            <span className="text-md">{data?.currAuth?.email}</span>
+                        </span>
+                    </div>
                 </div>
             </header>
         </>

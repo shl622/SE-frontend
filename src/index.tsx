@@ -5,6 +5,7 @@ import reportWebVitals from './reportWebVitals';
 import "./styles/styles.css"
 import { ApolloProvider } from '@apollo/client';
 import { client } from './apollo';
+import { CartProvider } from './context/cart-context';
 
 const root = ReactDOM.createRoot(
   document.getElementById('root') as HTMLElement
@@ -12,9 +13,11 @@ const root = ReactDOM.createRoot(
 root.render(
   <React.StrictMode>
     <ApolloProvider client={client}>
-      <div className='min-h-screen font-urbanist'>
-        <App />
-      </div>
+      <CartProvider>
+        <div className='min-h-screen font-urbanist'>
+          <App />
+        </div>
+      </CartProvider>
     </ApolloProvider>
   </React.StrictMode>
 );
