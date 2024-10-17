@@ -1,5 +1,5 @@
 import { gql, useQuery } from "@apollo/client"
-import { faCircleInfo } from "@fortawesome/free-solid-svg-icons"
+import { faCircleInfo, faXmark } from "@fortawesome/free-solid-svg-icons"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 import { useEffect, useState } from "react"
 import { Helmet, HelmetProvider } from "react-helmet-async"
@@ -90,7 +90,25 @@ export const Restaurant = () => {
                     )}
                 </div>
             </div>
-
+            {isModalOpen && (
+                <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4">
+                    <div className="bg-white rounded-lg shadow-xl w-full max-w-2xl">
+                        <div className="p-6">
+                            <div className="flex justify-between items-center mb-4">
+                                <h2 className="text-2xl font-bold">{restaurantName}</h2>
+                                <button
+                                    className="text-gray-500 hover:text-gray-700 transition"
+                                    onClick={() => setIsModalOpen(false)}
+                                >
+                                    <FontAwesomeIcon icon={faXmark} />
+                                </button>
+                            </div>
+                            <h3 className="text-xl font-medium mb-2">Cuisine: {data?.restaurant.restaurant?.category?.name}</h3>
+                            <p className="text-lg mb-4">{data?.restaurant.restaurant?.address}</p>
+                        </div>
+                    </div>
+                </div>
+            )}
             {data?.restaurant.restaurant?.menu?.length === 0 ? (
                 <div className="text-center text-lg mt-10">
                     <p>Coming Soon...</p>
