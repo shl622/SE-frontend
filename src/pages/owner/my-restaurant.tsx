@@ -169,7 +169,9 @@ export const MyRestaurant = () => {
                         description={dish.description} 
                         photo={dish.photo} 
                         options={dish.options || []} 
-                        restaurantId={data?.myRestaurant.restaurant?.id!} />
+                        restaurantId={data?.myRestaurant.restaurant?.id!}
+                        addItemToOrder={()=>{}}
+                        />
                     ))}
                 </div>}
             </div>

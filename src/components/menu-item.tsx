@@ -4,7 +4,7 @@ import { faXmark } from "@fortawesome/free-solid-svg-icons"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 
 
-export const MenuItem: React.FC<IDishProps> = ({ id, name, price, description, photo, options, restaurantId }) => {
+export const MenuItem: React.FC<IDishProps> = ({ id, name, price, description, photo, options, restaurantId, addItemToOrder, orderStarted=false}) => {
 
     const [isModalOpen, setIsModalOpen] = useState(false)
     const [selectedOptions, setSelectedOptions] = useState({})
@@ -46,7 +46,6 @@ export const MenuItem: React.FC<IDishProps> = ({ id, name, price, description, p
                         <p className="mb-4">{description}</p>
                         <p className="text-xl font-medium text-gray-700 mb-4">${price}</p>
                         
-                        {/* Add options selection here */}
                         {options && options.map((option, index) => (
                             <div key={index} className="mb-4">
                                 <label className="block mb-2">{option.name}</label>
@@ -60,8 +59,12 @@ export const MenuItem: React.FC<IDishProps> = ({ id, name, price, description, p
                                 </select>
                                 </div>
                             ))}
+                            <button className="bg-lime-600 text-white px-5 py-2 rounded-md mt-5 hover:bg-lime-700 transition"
+                            onClick={() => (orderStarted ? addItemToOrder(id) : null)}
+                            >Add to Order</button>
                         </div>
                     </div>
+            
                 </div>
             )}
         </>
