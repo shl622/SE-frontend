@@ -64,7 +64,7 @@ export const MenuItem: React.FC<IDishProps> = ({ id, name, price, description, p
                             ))}
                             <button className="bg-lime-600 text-white px-5 py-2 rounded-md mt-5 hover:bg-lime-700 transition"
                                 onClick={() => (orderStarted ? addItemToOrder(id) : null)}
-                            >Add to Order</button>
+                            >{isSelected ? "Remove" : "Add to Order"}</button>
                         </div>
                     </div>
 

@@ -72,8 +72,14 @@ export const Restaurant = () => {
         setOrderStarted(true)
     }
     const addItemToOrder = (itemId: number) => {
-        if (orderItems.find((orderItem)=> orderItem.dishId === itemId)) return
-        setOrderItems(current=> [{dishId:itemId}, ...current])
+        setOrderItems(current => {
+            const existingItem = current.find((orderItem) => orderItem.dishId === itemId)
+            if (existingItem) {
+                return current.filter((orderItem) => orderItem.dishId !== itemId)
+            } else {
+                return [{dishId: itemId}, ...current]
+            }
+        })
     }
     console.log(orderItems)
     useEffect(() => {
