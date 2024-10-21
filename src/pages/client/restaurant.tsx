@@ -1,10 +1,10 @@
 import { gql, useQuery } from "@apollo/client"
-import { faCircleInfo, faXmark } from "@fortawesome/free-solid-svg-icons"
+import { faCircleInfo, faShoppingCart, faXmark } from "@fortawesome/free-solid-svg-icons"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 import { useEffect, useState } from "react"
 import { Helmet, HelmetProvider } from "react-helmet-async"
 import { useParams } from "react-router-dom"
-import { RestaurantQuery, RestaurantQueryVariables } from "../../__generated__/graphql"
+import { CreateOrderItemInput, RestaurantQuery, RestaurantQueryVariables } from "../../__generated__/graphql"
 import { MenuItem } from "../../components/menu-item"
 
 const RESTAURANT_QUERY = gql`
@@ -42,6 +42,15 @@ const RESTAURANT_QUERY = gql`
     }
 `
 
+const CREATE_ORDER_MUTATION = gql`
+    mutation createOrder($input: CreateOrderInput!) {
+        createOrder(input: $input) {
+            ok
+            error
+        }
+    }
+`
+
 interface IRestaurantParams {
     id: string
 }
@@ -57,7 +66,16 @@ export const Restaurant = () => {
             }
         }
     })
-    console.log(data)
+    const [orderStarted, setOrderStarted] = useState(false)
+    const [orderItems, setOrderItems] = useState<CreateOrderItemInput[]>([])
+    const triggerStartOrder = () => {
+        setOrderStarted(true)
+    }
+    const addItemToOrder = (itemId: number) => {
+        if (orderItems.find((orderItem)=> orderItem.dishId === itemId)) return
+        setOrderItems(current=> [{dishId:itemId}, ...current])
+    }
+    console.log(orderItems)
     useEffect(() => {
         if (data) {
             setRestaurantName(data.restaurant.restaurant?.name!)
@@ -88,6 +106,10 @@ export const Restaurant = () => {
                     {data?.restaurant.restaurant?.isPromoted && (
                         <span className="text-green-600 font-medium">Promoted</span>
                     )}
+                    <button className="bg-lime-600 text-white px-5 py-2 rounded-md mt-5 hover:bg-lime-700 transition flex items-center gap-2" onClick={triggerStartOrder}>
+                        <FontAwesomeIcon icon={faShoppingCart} />
+                        {orderStarted ? `Ordering ${orderItems.length}` : "Start Order"}
+                    </button>
                 </div>
             </div>
             {isModalOpen && (
@@ -117,6 +139,7 @@ export const Restaurant = () => {
                 <div className="px-5 md:px-10 lg:px-20 xl:px-20 mt-16 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
                     {data?.restaurant.restaurant?.menu?.map((dish: any) => (
                         <MenuItem
+                            orderStarted = {orderStarted}
                             key={dish.id}
                             id={dish.id}
                             name={dish.name}
@@ -124,7 +147,9 @@ export const Restaurant = () => {
                             description={dish.description}
                             photo={dish.photo}
                             options={dish.options || []}
-                            restaurantId={data?.restaurant.restaurant?.id!} />
+                            restaurantId={data?.restaurant.restaurant?.id!}
+                            addItemToOrder={addItemToOrder}
+                        />
                     ))}
                 </div>
             )}

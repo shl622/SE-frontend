@@ -5,6 +5,7 @@ import { Link } from "react-router-dom"
 
 
 export interface IDishProps {
+    orderStarted?: boolean
     id: number
     name: string
     price: number
@@ -16,8 +17,9 @@ export interface IDishProps {
         extra: number
     }[]
     restaurantId: number
+    addItemToOrder: (itemId: number) => void
 }
-export const Dish: React.FC<IDishProps> = ({ id, name, price, description, photo, options, restaurantId }) => {
+export const Dish: React.FC<IDishProps> = ({ orderStarted = false, id, name, price, description, photo, options, restaurantId, addItemToOrder }) => {
     const [isModalOpen, setIsModalOpen] = useState(false)
     useEffect(() => {
         if (isModalOpen) {
