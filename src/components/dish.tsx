@@ -5,7 +5,6 @@ import { Link } from "react-router-dom"
 
 
 export interface IDishProps {
-    orderStarted?: boolean
     id: number
     name: string
     price: number
@@ -17,6 +16,8 @@ export interface IDishProps {
         extra: number
     }[]
     restaurantId: number
+    isSelected?: boolean
+    orderStarted?: boolean
     addItemToOrder: (itemId: number) => void
 }
 export const Dish: React.FC<IDishProps> = ({ orderStarted = false, id, name, price, description, photo, options, restaurantId, addItemToOrder }) => {

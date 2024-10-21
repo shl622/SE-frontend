@@ -139,6 +139,7 @@ export const Restaurant = () => {
                 <div className="px-5 md:px-10 lg:px-20 xl:px-20 mt-16 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
                     {data?.restaurant.restaurant?.menu?.map((dish: any) => (
                         <MenuItem
+                            isSelected = {orderItems.find((orderItem)=> orderItem.dishId === dish.id) ? true : false}
                             orderStarted = {orderStarted}
                             key={dish.id}
                             id={dish.id}
